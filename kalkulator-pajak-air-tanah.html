@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Pajak Air Tanah (PAT) DKI Jakarta</title>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background: #eef2f7; margin: 0; padding: 20px; color: #1a2b4a; }
+  .container { max-width: 1080px; margin: auto; background: #fff; border-radius: 12px;
+               box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden; }
+  header { background: linear-gradient(135deg, #00695c, #26a69a); color: #fff; padding: 22px 26px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .unit { margin-top: 6px; font-size: 14px; font-weight: 600; letter-spacing: .5px; }
+  header p { margin: 6px 0 0; font-size: 13px; opacity: .9; }
+  .content { padding: 24px 26px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  input, select { width: 100%; padding: 10px; border: 1px solid #c3cfe0; border-radius: 8px;
+                  font-size: 14px; background: #fbfdff; }
+  input:focus, select:focus { outline: none; border-color: #26a69a; box-shadow: 0 0 0 3px rgba(38,166,154,.15); }
+  .full { grid-column: 1 / -1; }
+  .hint { font-size: 11px; color: #607d8b; margin-top: 4px; }
+  .section-title { font-size: 14px; font-weight: 700; color: #00695c; margin: 18px 0 8px;
+                   border-bottom: 2px solid #b2dfdb; padding-bottom: 4px; }
+  .buttons { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+  button { padding: 11px 22px; border: none; border-radius: 8px; font-size: 14px;
+           font-weight: 600; cursor: pointer; transition: .2s; }
+  .btn-hitung { background: #26a69a; color: #fff; }
+  .btn-hitung:hover { background: #00695c; }
+  .btn-simpan { background: #2e7d32; color: #fff; }
+  .btn-simpan:hover { background: #1b5e20; }
+  .btn-cetak  { background: #ef6c00; color: #fff; }
+  .btn-cetak:hover { background: #e65100; }
+  .btn-reset  { background: #eceff1; color: #455a64; }
+  .btn-reset:hover { background: #cfd8dc; }
+  .result { margin-top: 24px; border: 1px solid #c3cfe0; border-radius: 10px; overflow: hidden; display: none; }
+  .result.show { display: block; }
+  .result-head { background: #e0f2f1; padding: 12px 18px; font-weight: 700; color: #00695c; }
+  .result-body { padding: 18px; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #dde5ee; font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row.total { font-size: 17px; font-weight: 700; color: #00695c; border-top: 2px solid #26a69a; margin-top: 6px; padding-top: 12px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-objek { background: #c8e6c9; color: #1b5e20; }
+  .badge-bebas { background: #ffcdd2; color: #b71c1c; }
+  .saved-list { margin-top: 26px; }
+  .saved-list h3 { font-size: 15px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid #e0e7ef; text-align: left; }
+  th { background: #f5f8fc; font-weight: 700; color: #37474f; }
+  .empty { color: #90a4ae; font-style: italic; font-size: 13px; }
+  .note { background: #fff8e1; border-left: 4px solid #ffb300; padding: 12px 16px;
+          font-size: 12px; border-radius: 6px; margin-top: 20px; line-height: 1.6; }
+  .calc-box { background: #f1f8f7; border: 1px dashed #80cbc4; border-radius: 8px;
+              padding: 10px 14px; font-size: 12px; margin-top: 8px; color: #004d40; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    header, .buttons, .saved-list, .note, .input-section { display: none !important; }
+    .container { box-shadow: none; }
+    .result { display: block !important; border: 2px solid #000; }
+    .result-head { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; }
+  }
+
+  header { position: relative; }
+  .back { position:absolute; right:22px; top:22px; color:#fff; font-size:12px; text-decoration:none;
+          background:rgba(255,255,255,.18); padding:6px 12px; border-radius:20px; }
+  .back:hover { background:rgba(255,255,255,.3); }
+  .stale { display:none; background:#fff3e0; border-left:4px solid #ef6c00; padding:10px 14px;
+           border-radius:6px; font-size:12px; margin-top:16px; }
+  .stale.show { display:block; }
+  .result.show { animation: pop .45s ease; }
+  @keyframes pop { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+  .hero { background: linear-gradient(135deg,#00695c,#26a69a); color:#fff; padding:22px; text-align:center; }
+  .hero small { opacity:.85; letter-spacing:.8px; font-size:11px; }
+  .hero .big { font-size:34px; font-weight:700; margin:6px 0 10px; }
+  .bars { margin:4px 0 14px; }
+  .bar-row { display:grid; grid-template-columns:170px 1fr 130px; gap:10px; align-items:center; font-size:12px; margin:9px 0; }
+  .bar-row b { text-align:right; }
+  .bar-track { background:#e0f2f1; border-radius:20px; height:14px; overflow:hidden; }
+  .bar-fill { height:100%; width:0; border-radius:20px; transition: width .9s cubic-bezier(.2,.8,.2,1); }
+  details.steps { margin-top:12px; background:#f1f8f7; border-radius:8px; padding:10px 14px; font-size:13px; }
+  details.steps summary { cursor:pointer; font-weight:600; color:#00695c; }
+  details.steps ol { margin:10px 0 0 18px; padding:0; line-height:1.9; }
+  .toast { position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(30px); background:#263238;
+           color:#fff; padding:12px 20px; border-radius:30px; font-size:13px; opacity:0; pointer-events:none;
+           transition:.3s; z-index:99; max-width:90%; text-align:center; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.err { background:#c62828; }
+  .btn-pdf { padding:5px 10px; font-size:12px; background:#e0f2f1; color:#00695c; }
+  .btn-pdf:hover { background:#b2dfdb; }
+  .input-err { border-color:#e53935 !important; box-shadow:0 0 0 3px rgba(229,57,53,.15) !important; }
+  @media (max-width: 720px) { .bar-row { grid-template-columns:1fr; } .bar-row b { text-align:left; } .back { position:static; display:inline-block; margin-top:10px; } }
+  @media print { .stale, .toast, .back, .btn-pdf { display:none !important; }
+                 .hero { background:#eee !important; color:#000 !important; -webkit-print-color-adjust:exact; } }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <a class="back" href="index.html">← Menu Utama</a>
+    <h1>Kalkulator Pajak Air Tanah (PAT) — DKI Jakarta</h1>
+    <div class="unit">--- UP3D Wilayah Kecamatan Penjaringan ---</div>
+    <p>Perda DKI No. 1 Tahun 2024 · Pergub DKI No. 94 Tahun 2021 · Tarif 20% · Berlaku s.d. 2026</p>
+  </header>
+
+  <div class="content">
+    <div class="input-section">
+
+      <div class="section-title">1. Skenario Contoh (opsional)</div>
+      <div class="grid">
+        <div class="full">
+          <label for="skenario">Pilih Skenario (isi otomatis)</label>
+          <select id="skenario" onchange="isiSkenario()">
+            <option value="">-- Pilih Skenario Contoh --</option>
+            <option value="1">1. Hotel — kualitas baik, ada PDAM, volume kecil (50 m³)</option>
+            <option value="2">2. Hotel — kualitas baik, tanpa PDAM, volume sedang (500 m³)</option>
+            <option value="3">3. Restoran — kualitas tidak baik, ada PDAM (30 m³)</option>
+            <option value="4">4. Industri — kualitas baik, tanpa PDAM, volume besar (2.000 m³)</option>
+            <option value="5">5. Perkantoran — kualitas baik, ada PDAM (300 m³)</option>
+            <option value="6">6. Pusat Pertokoan — kualitas tidak baik, tanpa PDAM (1.000 m³)</option>
+            <option value="7">7. Hotel dengan potongan/diskon 10%</option>
+            <option value="8">8. Industri volume sangat besar (5.000 m³)</option>
+            <option value="9">9. Usaha Laundry — kualitas baik, ada PDAM (200 m³)</option>
+            <option value="10">10. Rumah Tangga — Dikecualikan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title">2. Data Pengambilan Air</div>
+      <div class="grid">
+        <div>
+          <label for="jenisUsaha">Jenis / Macam Usaha (Kelompok Pengguna)</label>
+          <select id="jenisUsaha" onchange="hitungLive()">
+            <option value="Hotel">Perhotelan</option>
+            <option value="Restoran">Restoran / Kuliner</option>
+            <option value="Industri">Industri / Manufaktur</option>
+            <option value="Perkantoran">Perkantoran</option>
+            <option value="Pusat Pertokoan">Pusat Pertokoan</option>
+            <option value="Laundry">Usaha Laundry</option>
+            <option value="Jasa Komersial">Jasa Komersial Lain</option>
+            <option value="Rumah Tangga">Rumah Tangga (Dikecualikan)</option>
+            <option value="Pertanian">Pertanian Rakyat (Dikecualikan)</option>
+            <option value="Perikanan">Perikanan Rakyat (Dikecualikan)</option>
+            <option value="Peternakan">Peternakan Rakyat (Dikecualikan)</option>
+            <option value="Keagamaan">Keagamaan (Dikecualikan)</option>
+            <option value="Pemadam">Pemadam Kebakaran (Dikecualikan)</option>
+            <option value="Pemerintah">Pemerintah / Pemda (Dikecualikan)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sumberAir">Sumber Air Tanah</label>
+          <select id="sumberAir" onchange="hitungLive()">
+            <option value="Dangkal">Air Tanah Dangkal</option>
+            <option value="Dalam">Air Tanah Dalam</option>
+            <option value="Mata Air">Mata Air</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="kualitasAir">Kualitas Air</label>
+          <select id="kualitasAir" onchange="hitungLive()">
+            <option value="Baik">Baik</option>
+            <option value="Tidak Baik">Tidak Baik</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="volume">Volume Air (m³)</label>
+          <input type="number" id="volume" min="0" value="0" oninput="hitungLive()">
+        </div>
+
+        <div>
+          <label for="hargaAirBaku">Harga Air Baku / HAB (Rp/m³)</label>
+          <input type="number" id="hargaAirBaku" min="0" value="14538" oninput="hitungLive()">
+          <div class="hint">Default HAB sesuai ketentuan: Rp 14.538/m³.</div>
+        </div>
+
+        <div>
+          <label for="fna">Faktor Nilai Air / FNA (koefisien)</label>
+          <input type="number" id="fna" min="0" step="0.01" value="1.20" oninput="hitungLive()">
+          <div class="hint">Ilustrasi: 0,8–3,0 tergantung kualitas, sumber alternatif, volume.</div>
+        </div>
+      </div>
+      <div class="calc-box" id="calcBox">
+        NPA = Volume × HAB × FNA &nbsp;|&nbsp; PAT = 20% × NPA
+      </div>
+
+      <div class="section-title">3. Potongan / Diskon (jika ada)</div>
+      <div class="grid">
+        <div>
+          <label for="potonganPersen">Potongan / Diskon (%)</label>
+          <input type="number" id="potonganPersen" min="0" max="100" value="0" oninput="hitungLive()">
+        </div>
+        <div>
+          <label for="potonganNominal">Potongan / Diskon (Rp)</label>
+          <input type="number" id="potonganNominal" min="0" value="0" oninput="hitungLive()">
+          <div class="hint">Nominal diprioritaskan jika diisi > 0.</div>
+        </div>
+        <div class="full">
+          <label for="keterangan">Keterangan / No. SPTPD (opsional)</label>
+          <input type="text" id="keterangan" placeholder="Contoh: SPTPD #PAT-2026-001 / Meteran M-123">
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn-hitung" onclick="hitung()">🧮 Hitung</button>
+        <button class="btn-simpan" onclick="simpan()">💾 Simpan (PDF)</button>
+        <button class="btn-cetak" onclick="cetak()">🖨️ Cetak</button>
+        <button class="btn-reset" onclick="resetForm()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- HASIL -->
+    <div class="stale" id="stale">⚠️ Data input berubah. Klik <strong>Hitung</strong> untuk memperbarui hasil sebelum menyimpan.</div>
+    <div class="result" id="result">
+      <div class="result-head">Hasil Perhitungan Pajak Air Tanah (PAT)</div>
+      <div class="hero">
+        <small>PAJAK AIR TANAH TERUTANG</small>
+        <div class="big" id="rPajak">Rp 0</div>
+        <span id="rStatus"></span>
+      </div>
+      <div class="result-body">
+        <div class="bars" id="bars"></div>
+        <div class="row"><span>Jenis Usaha / Kelompok Pengguna</span><span id="rUsaha">-</span></div>
+        <div class="row"><span>Sumber Air Tanah</span><span id="rSumber">-</span></div>
+        <div class="row"><span>Kualitas Air</span><span id="rKualitas">-</span></div>
+        <div class="row"><span>Volume Air</span><span id="rVolume">-</span></div>
+        <div class="row"><span>Harga Air Baku (HAB)</span><span id="rHAB">-</span></div>
+        <div class="row"><span>Faktor Nilai Air (FNA)</span><span id="rFNA">-</span></div>
+        <div class="row"><span>Nilai Perolehan Air (NPA)</span><span id="rNPA">-</span></div>
+        <div class="row"><span>Potongan / Diskon</span><span id="rPotongan">-</span></div>
+        <div class="row"><span>Dasar Pengenaan Pajak (setelah potongan)</span><span id="rDPP">-</span></div>
+        <div class="row"><span>Tarif PAT</span><span id="rRate">20%</span></div>
+        <div class="row"><span>Keterangan</span><span id="rKet">-</span></div>
+        <div class="row"><span>Waktu Hitung</span><span id="rWaktu">-</span></div>
+        <details class="steps"><summary>Lihat langkah perhitungan</summary><ol id="rSteps"></ol></details>
+      </div>
+    </div>
+
+    <!-- RIWAYAT -->
+    <div class="saved-list">
+      <h3>📋 Riwayat Perhitungan Tersimpan</h3>
+      <table id="tabelRiwayat">
+        <thead>
+          <tr>
+            <th>No</th><th>Usaha</th><th>Sumber</th><th>Kualitas</th><th>Volume (m³)</th>
+            <th>NPA</th><th>PAT 20%</th><th>Waktu</th><th>PDF</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyRiwayat">
+          <tr><td colspan="9" class="empty">Belum ada data tersimpan.</td></tr>
+        </tbody>
+      </table>
+      <div class="buttons" style="margin-top:12px;">
+        <button class="btn-reset" onclick="hapusRiwayat()">🗑️ Hapus Riwayat</button>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Catatan:</strong> PAT = 20% × NPA, dengan NPA = Volume (m³) × HAB × FNA.
+      HAB default Rp 14.538/m³. FNA ditentukan berdasarkan komponen Sumber Daya Alam (60%)
+      dan Peruntukan &amp; Pengelolaan (40%) sesuai Pergub DKI No. 94/2021 — nilai FNA di aplikasi
+      ini adalah <em>ilustrasi</em> yang dapat disesuaikan. Pengecualian: rumah tangga, pertanian/
+      perikanan/peternakan rakyat, keagamaan, pemadam kebakaran, dan Pemerintah/Pemda.
+      Dasar hukum: <strong>Perda DKI No. 1 Tahun 2024</strong>, <strong>Pergub DKI No. 94 Tahun 2021</strong>,
+      <strong>UU No. 1 Tahun 2022 (HKPD)</strong>.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+/* ===================== DATA SKENARIO ===================== */
+const SKENARIO = {
+  1:  { jenisUsaha:"Hotel", sumber:"Dangkal", kualitas:"Baik", volume:50,   hab:14538, fna:1.2, potP:0, potN:0, ket:"Hotel kualitas baik, ada PDAM" },
+  2:  { jenisUsaha:"Hotel", sumber:"Dalam", kualitas:"Baik", volume:500,  hab:14538, fna:1.8, potP:0, potN:0, ket:"Hotel kualitas baik, tanpa PDAM" },
+  3:  { jenisUsaha:"Restoran", sumber:"Dangkal", kualitas:"Tidak Baik", volume:30, hab:14538, fna:0.8, potP:0, potN:0, ket:"Restoran kualitas tidak baik, ada PDAM" },
+  4:  { jenisUsaha:"Industri", sumber:"Dalam", kualitas:"Baik", volume:2000, hab:14538, fna:2.4, potP:0, potN:0, ket:"Industri volume besar, tanpa PDAM" },
+  5:  { jenisUsaha:"Perkantoran", sumber:"Dangkal", kualitas:"Baik", volume:300, hab:14538, fna:1.2, potP:0, potN:0, ket:"Perkantoran, ada PDAM" },
+  6:  { jenisUsaha:"Pusat Pertokoan", sumber:"Dalam", kualitas:"Tidak Baik", volume:1000, hab:14538, fna:1.5, potP:0, potN:0, ket:"Pusat pertokoan, tanpa PDAM" },
+  7:  { jenisUsaha:"Hotel", sumber:"Dalam", kualitas:"Baik", volume:500, hab:14538, fna:1.8, potP:10, potN:0, ket:"Hotel dengan potongan 10%" },
+  8:  { jenisUsaha:"Industri", sumber:"Dalam", kualitas:"Baik", volume:5000, hab:14538, fna:3.0, potP:0, potN:0, ket:"Industri volume sangat besar" },
+  9:  { jenisUsaha:"Laundry", sumber:"Dangkal", kualitas:"Baik", volume:200, hab:14538, fna:1.2, potP:0, potN:0, ket:"Usaha laundry, ada PDAM" },
+  10: { jenisUsaha:"Rumah Tangga", sumber:"Dangkal", kualitas:"Baik", volume:20, hab:14538, fna:1.2, potP:0, potN:0, ket:"Rumah tangga - dikecualikan" }
+};
+
+const DIKECUALIKAN = ["Rumah Tangga","Pertanian","Perikanan","Peternakan","Keagamaan","Pemadam","Pemerintah"];
+
+let hasilTerakhir = null;
+let riwayat = JSON.parse(localStorage.getItem('pat_dki_riwayat') || '[]');
+
+/* ===================== UTIL ===================== */
+const rupiah = n => 'Rp ' + Number(n).toLocaleString('id-ID', {maximumFractionDigits: 0});
+const num = id => parseFloat(document.getElementById(id).value) || 0;
+const TARIF_PAT = 0.20;
+
+/* ===================== ISI SKENARIO ===================== */
+function isiSkenario() {
+  const kode = document.getElementById('skenario').value;
+  if (!kode) return;
+  const s = SKENARIO[kode];
+  document.getElementById('jenisUsaha').value = s.jenisUsaha;
+  document.getElementById('sumberAir').value = s.sumber;
+  document.getElementById('kualitasAir').value = s.kualitas;
+  document.getElementById('volume').value = s.volume;
+  document.getElementById('hargaAirBaku').value = s.hab;
+  document.getElementById('fna').value = s.fna;
+  document.getElementById('potonganPersen').value = s.potP;
+  document.getElementById('potonganNominal').value = s.potN;
+  document.getElementById('keterangan').value = s.ket;
+  hitungLive();
+}
+
+/* ===================== UTIL TAMBAHAN ===================== */
+const fmt = n => Number(n).toLocaleString('id-ID', {maximumFractionDigits: 2});
+let toastTimer;
+function toast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = 'toast', 3200);
+}
+function countUp(el, to) {
+  const t0 = performance.now(), d = 900;
+  (function f(t) {
+    const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = rupiah(to * e);
+    if (p < 1) requestAnimationFrame(f);
+  })(t0);
+}
+
+/* ===================== INTI PERHITUNGAN ===================== */
+function ambilInput() {
+  return {
+    jenisUsaha: document.getElementById('jenisUsaha').value,
+    sumber: document.getElementById('sumberAir').value,
+    kualitas: document.getElementById('kualitasAir').value,
+    volume: num('volume'), hab: num('hargaAirBaku'), fna: num('fna'),
+    potP: num('potonganPersen'), potN: num('potonganNominal'),
+    keterangan: document.getElementById('keterangan').value.trim()
+  };
+}
+
+function hitungData(i) {
+  if (DIKECUALIKAN.includes(i.jenisUsaha)) {
+    return { ...i, dikecualikan: true, npa: 0, potongan: 0, dpp: 0, pajak: 0,
+             status: 'Dikecualikan', rate: '0%', alasan: 'Termasuk kategori dikecualikan' };
+  }
+  const npa = i.volume * i.hab * i.fna;
+  let potongan = i.potN > 0 ? i.potN : (i.potP > 0 ? npa * i.potP / 100 : 0);
+  potongan = Math.min(potongan, npa);
+  const dpp = Math.max(0, npa - potongan);
+  return { ...i, dikecualikan: false, npa, potongan, dpp, pajak: dpp * TARIF_PAT,
+           status: 'Objek PAT', rate: '20%', alasan: '-' };
+}
+
+/* Pratinjau rumus (tanpa menampilkan hasil); hasil resmi hanya lewat tombol Hitung */
+function hitungLive() {
+  const h = hitungData(ambilInput());
+  document.getElementById('calcBox').innerHTML = h.dikecualikan
+    ? 'Kelompok pengguna ini <strong>dikecualikan</strong> dari PAT.'
+    : 'NPA = ' + fmt(h.volume) + ' m³ × ' + rupiah(h.hab) + ' × ' + fmt(h.fna) +
+      ' = <strong>' + rupiah(h.npa) + '</strong> &nbsp;|&nbsp; PAT = 20% × ' + rupiah(h.dpp) +
+      ' = <strong>' + rupiah(h.pajak) + '</strong>';
+  if (hasilTerakhir) document.getElementById('stale').classList.add('show');
+}
+
+function validasi(i) {
+  document.querySelectorAll('.input-err').forEach(e => e.classList.remove('input-err'));
+  if (DIKECUALIKAN.includes(i.jenisUsaha)) return true;
+  const cek = [
+    [i.volume > 0, 'volume', 'Volume air harus lebih dari 0.'],
+    [i.hab > 0, 'hargaAirBaku', 'Harga Air Baku harus lebih dari 0.'],
+    [i.fna > 0, 'fna', 'Faktor Nilai Air harus lebih dari 0.'],
+    [i.potP >= 0 && i.potP <= 100, 'potonganPersen', 'Potongan (%) harus antara 0 dan 100.'],
+    [i.potN >= 0, 'potonganNominal', 'Potongan (Rp) tidak boleh negatif.']
+  ];
+  for (const [ok, id, msg] of cek) {
+    if (!ok) { const el = document.getElementById(id); el.classList.add('input-err'); el.focus(); toast(msg, true); return false; }
+  }
+  return true;
+}
+
+function tampilkanHasil(h) {
+  document.getElementById('rStatus').innerHTML = h.dikecualikan
+    ? '<span class="badge badge-bebas">Dikecualikan</span>' : '<span class="badge badge-objek">Objek PAT</span>';
+  document.getElementById('rUsaha').textContent = h.jenisUsaha;
+  document.getElementById('rSumber').textContent = h.sumber;
+  document.getElementById('rKualitas').textContent = h.kualitas;
+  document.getElementById('rVolume').textContent = fmt(h.volume) + ' m³';
+  document.getElementById('rHAB').textContent = rupiah(h.hab) + ' /m³';
+  document.getElementById('rFNA').textContent = fmt(h.fna);
+  document.getElementById('rNPA').textContent = rupiah(h.npa);
+  document.getElementById('rPotongan').textContent = rupiah(h.potongan);
+  document.getElementById('rDPP').textContent = rupiah(h.dpp);
+  document.getElementById('rRate').textContent = h.rate;
+  document.getElementById('rKet').textContent = (h.keterangan || '-') + (h.dikecualikan ? ' | ' + h.alasan : '');
+  document.getElementById('rWaktu').textContent = new Date(h.waktu).toLocaleString('id-ID');
+
+  document.getElementById('rSteps').innerHTML = h.dikecualikan
+    ? '<li>' + h.jenisUsaha + ' termasuk kelompok yang dikecualikan, sehingga PAT = <strong>Rp 0</strong>.</li>'
+    : '<li>NPA = Volume × HAB × FNA = ' + fmt(h.volume) + ' × ' + rupiah(h.hab) + ' × ' + fmt(h.fna) + ' = <strong>' + rupiah(h.npa) + '</strong></li>' +
+      '<li>Potongan = <strong>' + rupiah(h.potongan) + '</strong></li>' +
+      '<li>DPP = NPA − Potongan = ' + rupiah(h.npa) + ' − ' + rupiah(h.potongan) + ' = <strong>' + rupiah(h.dpp) + '</strong></li>' +
+      '<li>PAT = 20% × DPP = <strong>' + rupiah(h.pajak) + '</strong></li>';
+
+  const bars = document.getElementById('bars');
+  if (h.dikecualikan || h.npa <= 0) { bars.innerHTML = ''; }
+  else {
+    const rows = [['Nilai Perolehan Air (NPA)', h.npa, '#00897b'], ['Dasar Pengenaan (DPP)', h.dpp, '#26a69a'], ['PAT Terutang (20%)', h.pajak, '#ef6c00']];
+    bars.innerHTML = rows.map(r => '<div class="bar-row"><span>' + r[0] + '</span><div class="bar-track"><div class="bar-fill" data-w="' +
+      (r[1] / h.npa * 100).toFixed(1) + '" style="background:' + r[2] + '"></div></div><b>' + rupiah(r[1]) + '</b></div>').join('');
+    setTimeout(() => bars.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w + '%'), 60);
+  }
+
+  const res = document.getElementById('result');
+  res.classList.remove('show'); void res.offsetWidth; res.classList.add('show');
+  countUp(document.getElementById('rPajak'), h.pajak);
+}
+
+/* ===================== TOMBOL ===================== */
+function hitung() {
+  const i = ambilInput();
+  if (!validasi(i)) return;
+  const w = new Date();
+  const p = n => String(n).padStart(2, '0');
+  const h = hitungData(i);
+  h.waktu = w.toISOString();
+  h.nomor = 'PAT-' + w.getFullYear() + p(w.getMonth() + 1) + p(w.getDate()) + '-' + p(w.getHours()) + p(w.getMinutes()) + p(w.getSeconds());
+  hasilTerakhir = h;
+  document.getElementById('stale').classList.remove('show');
+  tampilkanHasil(h);
+  hitungLive();
+  document.getElementById('stale').classList.remove('show');
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toast('Perhitungan selesai. PAT terutang: ' + rupiah(h.pajak));
+}
+
+function simpan() {
+  if (!hasilTerakhir) { toast('Klik Hitung terlebih dahulu.', true); return; }
+  if (document.getElementById('stale').classList.contains('show')) { toast('Data berubah. Klik Hitung lagi sebelum menyimpan.', true); return; }
+  riwayat.push(hasilTerakhir);
+  localStorage.setItem('pat_dki_riwayat', JSON.stringify(riwayat));
+  renderRiwayat();
+  buatPDF(hasilTerakhir);
+}
+
+function cetak() {
+  if (!hasilTerakhir) { toast('Klik Hitung terlebih dahulu sebelum mencetak.', true); return; }
+  window.print();
+}
+
+function resetForm() {
+  document.getElementById('skenario').value = '';
+  document.getElementById('jenisUsaha').value = 'Hotel';
+  document.getElementById('sumberAir').value = 'Dangkal';
+  document.getElementById('kualitasAir').value = 'Baik';
+  document.getElementById('volume').value = 0;
+  document.getElementById('hargaAirBaku').value = 14538;
+  document.getElementById('fna').value = 1.20;
+  document.getElementById('potonganPersen').value = 0;
+  document.getElementById('potonganNominal').value = 0;
+  document.getElementById('keterangan').value = '';
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('stale').classList.remove('show');
+  document.querySelectorAll('.input-err').forEach(e => e.classList.remove('input-err'));
+  hasilTerakhir = null;
+  hitungLive();
+}
+
+/* ===================== PDF ===================== */
+function buatPDF(h) {
+  if (!(window.jspdf && window.jspdf.jsPDF)) {
+    toast('Pustaka PDF belum termuat (perlu internet). Membuka dialog cetak...', true);
+    setTimeout(() => window.print(), 700); return;
+  }
+  const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, M = 15, TEAL = [0, 105, 92], LT = [224, 242, 241];
+  const nomor = h.nomor || ('PAT-' + new Date(h.waktu).getTime());
+  const tgl = new Date(h.waktu).toLocaleString('id-ID');
+
+  // Header
+  doc.setFillColor(...TEAL); doc.rect(0, 0, W, 40, 'F');
+  doc.setFillColor(38, 166, 154); doc.rect(0, 40, W, 3, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text('PERHITUNGAN PAJAK AIR TANAH', M, 17);
+  doc.setFontSize(10.5); doc.text('--- UP3D Wilayah Kecamatan Penjaringan ---', M, 24);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+  doc.text('Pemerintah Provinsi DKI Jakarta | Perda No. 1 Tahun 2024', M, 30);
+  doc.text('Pergub No. 94 Tahun 2021 | Tarif PAT 20%', M, 35);
+  doc.setFontSize(8.5); doc.text('No. Dokumen', W - M, 14, { align: 'right' });
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(nomor, W - M, 20, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.text('Tanggal Hitung', W - M, 28, { align: 'right' });
+  doc.setFont('helvetica', 'bold'); doc.text(tgl, W - M, 34, { align: 'right' });
+
+  // Kotak total
+  doc.setFillColor(...LT); doc.setDrawColor(...TEAL); doc.setLineWidth(0.6);
+  doc.roundedRect(M, 50, W - 2 * M, 28, 3, 3, 'FD');
+  doc.setTextColor(...TEAL); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  doc.text('PAJAK AIR TANAH TERUTANG', M + 6, 59);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(23); doc.text(rupiah(h.pajak), M + 6, 72);
+  doc.setFillColor(...(h.dikecualikan ? [198, 40, 40] : [46, 125, 50]));
+  doc.roundedRect(W - M - 38, 56, 32, 9, 4, 4, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(9);
+  doc.text(h.dikecualikan ? 'DIKECUALIKAN' : 'OBJEK PAT', W - M - 22, 62, { align: 'center' });
+
+  const sec = (y, t) => {
+    doc.setTextColor(...TEAL); doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text(t, M, y);
+    doc.setDrawColor(178, 223, 219); doc.setLineWidth(0.5); doc.line(M, y + 1.5, W - M, y + 1.5);
+  };
+  const tbl = (startY, head, body, cols) => doc.autoTable({
+    startY, head: head ? [head] : undefined, body, theme: 'grid', margin: { left: M, right: M },
+    styles: { fontSize: 9, cellPadding: 2.2, textColor: [38, 50, 56], lineColor: [221, 229, 238] },
+    headStyles: { fillColor: TEAL, textColor: 255 }, alternateRowStyles: { fillColor: [245, 250, 250] },
+    columnStyles: cols
+  });
+
+  sec(90, 'A. Data Objek dan Pengambilan Air');
+  tbl(94, null, [
+    ['Jenis Usaha / Kelompok', h.jenisUsaha], ['Sumber Air Tanah', h.sumber], ['Kualitas Air', h.kualitas],
+    ['Volume Air', fmt(h.volume) + ' m³'], ['Harga Air Baku (HAB)', rupiah(h.hab) + ' /m³'],
+    ['Faktor Nilai Air (FNA)', fmt(h.fna)], ['Keterangan / No. SPTPD', h.keterangan || '-']
+  ], { 0: { cellWidth: 60, fontStyle: 'bold', fillColor: LT } });
+
+  let y = doc.lastAutoTable.finalY + 9;
+  sec(y, 'B. Rincian Perhitungan');
+  const potLabel = h.potN > 0 ? 'Nominal' : (h.potP > 0 ? h.potP + '% x NPA' : 'Tidak ada');
+  tbl(y + 4, ['Komponen', 'Perhitungan', 'Nilai'], h.dikecualikan
+    ? [['PAT', 'Kelompok pengguna dikecualikan', rupiah(0)]]
+    : [['Nilai Perolehan Air (NPA)', fmt(h.volume) + ' m³ × ' + rupiah(h.hab) + ' × ' + fmt(h.fna), rupiah(h.npa)],
+       ['Potongan / Diskon', potLabel, '- ' + rupiah(h.potongan)],
+       ['Dasar Pengenaan Pajak (DPP)', 'NPA - Potongan', rupiah(h.dpp)],
+       ['PAT Terutang', '20% × DPP', rupiah(h.pajak)]],
+    { 2: { halign: 'right', fontStyle: 'bold' } });
+
+  y = doc.lastAutoTable.finalY + 9;
+  if (!h.dikecualikan && h.npa > 0) {
+    if (y > 230) { doc.addPage(); y = 20; }
+    sec(y, 'C. Komposisi Perhitungan');
+    [['NPA', h.npa, [0, 137, 123]], ['DPP', h.dpp, [38, 166, 154]], ['PAT 20%', h.pajak, [239, 108, 0]]].forEach((r, k) => {
+      const by = y + 9 + k * 9;
+      doc.setTextColor(55, 71, 79); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(r[0], M, by + 3.5);
+      doc.setFillColor(...LT); doc.roundedRect(M + 22, by, 95, 5, 2.5, 2.5, 'F');
+      doc.setFillColor(...r[2]); doc.roundedRect(M + 22, by, Math.max(2, 95 * r[1] / h.npa), 5, 2.5, 2.5, 'F');
+      doc.setFont('helvetica', 'bold'); doc.text(rupiah(r[1]), W - M, by + 3.5, { align: 'right' });
+    });
+    y += 40;
+  }
+
+  // Catatan
+  if (y > 255) { doc.addPage(); y = 20; }
+  const cat = doc.splitTextToSize('Catatan: Dokumen ini merupakan simulasi perhitungan berdasarkan data yang diinput pengguna. ' +
+    'Nilai FNA mengikuti angka yang dimasukkan dan bukan penetapan resmi. Dokumen ini bukan SKPD/ketetapan pajak. ' +
+    'Dasar: Perda DKI No. 1/2024, Pergub DKI No. 94/2021, UU No. 1/2022 (HKPD).', W - 2 * M - 8);
+  doc.setFillColor(255, 248, 225); doc.setDrawColor(255, 179, 0);
+  doc.roundedRect(M, y, W - 2 * M, cat.length * 4.2 + 6, 2, 2, 'FD');
+  doc.setTextColor(95, 75, 20); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text(cat, M + 4, y + 6);
+
+  // Footer
+  const n = doc.getNumberOfPages();
+  for (let p = 1; p <= n; p++) {
+    doc.setPage(p); doc.setDrawColor(200); doc.setLineWidth(0.2); doc.line(M, 285, W - M, 285);
+    doc.setTextColor(120); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    doc.text('Kalkulator Pajak Air Tanah - DKI Jakarta', M, 290);
+    doc.text('Halaman ' + p + ' / ' + n, W - M, 290, { align: 'right' });
+  }
+  doc.save('PAT_' + nomor + '.pdf');
+  toast('Tersimpan ke riwayat & PDF diunduh: PAT_' + nomor + '.pdf');
+}
+
+function unduhRiwayat(i) { buatPDF(riwayat[i]); }
+
+/* ===================== RIWAYAT ===================== */
+function renderRiwayat() {
+  const tbody = document.getElementById('tbodyRiwayat');
+  if (riwayat.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" class="empty">Belum ada data tersimpan.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = riwayat.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td><td>${r.jenisUsaha}</td><td>${r.sumber}</td><td>${r.kualitas}</td>
+      <td>${fmt(r.volume)}</td><td>${rupiah(r.npa)}</td><td>${rupiah(r.pajak)}</td>
+      <td>${new Date(r.waktu).toLocaleString('id-ID')}</td>
+      <td><button class="btn-pdf" onclick="unduhRiwayat(${i})">⬇ PDF</button></td>
+    </tr>`).join('');
+}
+
+function hapusRiwayat() {
+  if (!confirm('Hapus semua riwayat perhitungan?')) return;
+  riwayat = [];
+  localStorage.removeItem('pat_dki_riwayat');
+  renderRiwayat();
+}
+
+/* ===================== INIT ===================== */
+renderRiwayat();
+hitungLive();
+
+</script>
+</body>
+</html>

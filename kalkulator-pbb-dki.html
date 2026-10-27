@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#111418">
+<title>Kalkulator PBB-P2 untuk Wilayah Pemprov DKI Jakarta</title>
+<style>:root{--bg:#111418;--card:#1b2026;--text:#eceff3;--muted:#9aa4b0;--line:#303843;--accent:#4d94ff;--at:#0b0f14;--ok:#5fd68c;--okb:#16301f;--no:#ff8a80;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{background:#111418}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
+main{max-width:560px;margin:0 auto;padding:16px}
+h1{font-size:1.3rem;margin:8px 0 4px}h2{font-size:1rem;margin:0 0 8px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:.85rem;color:var(--muted);margin:12px 0 4px}
+input[type=text],select,textarea{width:100%;font-size:1rem;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;color:var(--text);font-size:.92rem}
+.chk input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--accent)}
+.chk small{display:block;color:var(--muted)}
+.st{padding:10px 0;border-bottom:1px dashed var(--line)}.st:last-child{border-bottom:0}
+.st b{display:block;font-size:.9rem}
+.r{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;padding:2px 0}
+.r span:first-child{color:var(--muted)}.r span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.ok{color:var(--ok)}.no{color:var(--no)}
+.total{margin-top:12px;padding:14px;border-radius:12px;background:var(--accent);color:var(--at);display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:700}
+.total .v{font-size:1.3rem}
+.syarat p{margin:0 0 8px;font-size:.85rem;color:var(--muted)}
+.syarat ol{margin:0;padding-left:20px;font-size:.92rem}.syarat li{margin-bottom:8px}
+.btns{display:flex;gap:10px;margin-bottom:14px}
+.btns button{flex:1;font:inherit;font-weight:700;padding:13px;border-radius:12px;border:1px solid var(--line);cursor:pointer;background:var(--card);color:var(--text)}
+.btns .pri{background:var(--accent);color:var(--at);border-color:var(--accent)}
+.logos{display:flex;justify-content:center;margin:4px 0 10px}
+.logobar{display:flex;align-items:center;justify-content:center;gap:18px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 16px}
+.logobar img{height:52px;width:auto;display:block}
+.paper{background:#fff;color:#111;border-radius:6px;padding:16px;font-size:.82rem;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.45);margin-bottom:12px}
+.paper hr{border:0;border-top:1px solid #999;margin:8px 0}
+.paper .pt{font-weight:700;font-size:.95rem}.paper .pu{font-weight:700}.paper .pm{font-size:.75rem;color:#444;margin-bottom:4px}
+.paper .ph{font-weight:700;margin:10px 0 3px}
+.paper{overflow-x:auto}.paper .pin{min-width:520px}
+.paper .pr{display:grid;grid-template-columns:52% 1fr;gap:8px;padding:1px 0 1px 6px}
+.paper .pr span:last-child{text-align:left}
+.paper .pg{font-weight:700;font-size:.95rem;padding-left:0}
+.paper .pn{font-size:.68rem;color:#444;margin-top:10px}
+textarea{resize:vertical;min-height:84px;font-family:inherit}
+.paper .pr span:only-child{grid-column:1/-1}
+.paper .pc{display:grid;grid-template-columns:minmax(130px,1fr) 56px 14px 100px 14px 104px;gap:2px;padding:1px 0 1px 6px;align-items:baseline}
+.paper .pc .n{text-align:right}.paper .pc .o{text-align:center}.paper .pc .u{border-bottom:1px solid #111}
+.paper .pr.ps{grid-template-columns:52% 1fr 104px}.paper .pr.ps span:last-child{text-align:right;border-bottom:1px solid #111}
+.paper .pb{font-weight:700}.paper .pg span:last-child{font-weight:400}
+.paper .pg{grid-template-columns:1fr auto}.paper .pg span:last-child{text-align:right}
+</style>
+</head>
+<body>
+<main>
+<div class="logos"><div class="logobar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTc1IiBoZWlnaHQ9IjU4IiB2aWV3Qm94PSIwIDAgMTc1IDU4Ij4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iMC41IiB4Mj0iMC41IiB5Mj0iMSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3YTY0NjciLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjU1MzdjIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQtMiIgeDE9IjAuMDY1IiB5MT0iMC4xNzEiIHgyPSIwLjk0OCIgeTI9IjAuNzciIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZWYyOTNhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M2MzU0MSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50LTMiIHgxPSIwLjQ2NiIgeTE9IjAuMjkiIHgyPSIwLjM1NCIgeTI9IjAuNzgiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMDhhYWVhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzA0NTU3NSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50LTQiIHgxPSIwLjc1NCIgeTE9IjAuMjAzIiB4Mj0iMC41IiB5Mj0iMSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM1ODY0NzgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMGQ5Y2M0Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQtNSIgeDE9IjAuNjMiIHkxPSIwLjUiIHgyPSIwLjUiIHkyPSIxIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzBhYWE0ZiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMzNmIyNmMiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8Y2xpcFBhdGggaWQ9ImNsaXAtbG9nby1iYXBlbmRhIj4KICAgICAgPHJlY3Qgd2lkdGg9IjE3NSIgaGVpZ2h0PSI1OCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPGcgaWQ9ImxvZ28tYmFwZW5kYSIgY2xpcC1wYXRoPSJ1cmwoI2NsaXAtbG9nby1iYXBlbmRhKSI+CiAgICA8cmVjdCB3aWR0aD0iMTc1IiBoZWlnaHQ9IjU4IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDApIi8+CiAgICA8ZyBpZD0iR3JvdXBfMSIgZGF0YS1uYW1lPSJHcm91cCAxIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyLjUxOSAtMjcuMSkiPgogICAgICA8cGF0aCBpZD0iUGF0aF8yIiBkYXRhLW5hbWU9IlBhdGggMiIgZD0iTTIxNS43MzksMTY4LjcxN3MtLjc0Ny0xLjYyOS0uMDc2LDEuNC0uMjE1LDQuNDM2LTEuMDc3LDQuOTE2YTcuNDg1LDcuNDg1LDAsMCwxLTIuMTEzLjY3bDUuMDMxLDIuODU4LDIuMDYzLTEuNDUzLDIuMjczLTQuMTQ1YTI2LjU4MywyNi41ODMsMCwwLDAtMS4wMDktMy4zNTZDMjIwLjYzNSwxNjkuNDg0LDIxNS43MzksMTY4LjcxNywyMTUuNzM5LDE2OC43MTdaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMTc5Ljc1OCAtMTE3LjM3NykiIGZpbGw9InVybCgjbGluZWFyLWdyYWRpZW50KSIvPgogICAgICA8cGF0aCBpZD0iUGF0aF8xIiBkYXRhLW5hbWU9IlBhdGggMSIgZD0iTTEzMi4zOTQsNDcuNzE4cy0xLjI0MSwyLjczLDUuODc0LDYuNywxMS44MjMsNS43MjUsMTMuMTE1LDguMTgxYTcuOCw3LjgsMCwwLDEsMS4xMDksNS40NjYsNi42NCw2LjY0LDAsMCwxLTIuNzY2LDQuNTUzLDE0LDE0LDAsMCwxLTIuNDgyLDEuMjgyczIuNjg5LTIuODU0Ljc4Ni01LjU4NC0xMi45ODgtNy42MTEtMTYuMTczLTEwLjA1MWE1Ljg4NSw1Ljg4NSwwLDAsMS0xLjg2MS03LjE1NkEyMi4yNTMsMjIuMjUzLDAsMCwxLDEzMi4zOTQsNDcuNzE4WiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEwOSAtMTMuMTE5KSIgZmlsbD0idXJsKCNsaW5lYXItZ3JhZGllbnQtMikiLz4KICAgICAgPHBhdGggaWQ9IlBhdGhfMyIgZGF0YS1uYW1lPSJQYXRoIDMiIGQ9Ik0xMzIuNCw0Ny43MThzLTEuMjQ0LDIuNzM4LDUuODksNi43MTksMTIuMDU0LDYuMjMxLDEyLjk2Nyw4LjUxM2ExMC42NDksMTAuNjQ5LDAsMCwxLC45ODksNS4yNjQsNi4yLDYuMiwwLDAsMS0yLjQ2Niw0LjQ3MywxNC4wMzksMTQuMDM5LDAsMCwxLTIuNDg5LDEuMjg2czIuNy0yLjg2Mi43ODgtNS42UzEzNS4wNTcsNjAuNzQyLDEzMS44NjMsNTguM0E1LjksNS45LDAsMCwxLDEzMCw1MS4xMiwyMi4zMTYsMjIuMzE2LDAsMCwxLDEzMi40LDQ3LjcxOFoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xMDguNyAyLjE3NSkiIGZpbGw9InVybCgjbGluZWFyLWdyYWRpZW50LTMpIi8+CiAgICAgIDxwYXRoIGlkPSJQYXRoXzUiIGRhdGEtbmFtZT0iUGF0aCA1IiBkPSJNMTIzLjkzNywyODUuNzJhMTMuMTc0LDEzLjE3NCwwLDAsMSwyLjc3LDIuMTcyYzEuMjg1LDEuMzQ3LDEuNDIyLDEuNTk0LDEuNTMxLDIuNjg4cy0yLjM3NSwxLjk3Ni0yLjQyMiwyLjE4OC0xLjA2Mi40MjItMS4wNjIuNDIybC0xLjk0MS40NDEtNS44ODMtNC42NjdzNC42NTEuOTE0LDUuNzUzLS40LDEuMjE5LTEuNjg4LDEuMjU1LTIuNDEzUzEyMy45MzcsMjg1LjcyLDEyMy45MzcsMjg1LjcyWiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTg2LjM1IC0yMTYuODUxKSIgZmlsbD0idXJsKCNsaW5lYXItZ3JhZGllbnQtNCkiLz4KICAgICAgPHBhdGggaWQ9IlBhdGhfNiIgZGF0YS1uYW1lPSJQYXRoIDYiIGQ9Ik01NC45NjIsMjYyLjI3NHMtNi42NjQtLjgyNi0xMS4xMjMtMy40My00LjQyNC0yLjgyOS01LjY3Ni00LjAwNmE0LjQsNC40LDAsMCwxLTEuNi0yLjg1NHYtLjY1MXMtMy4zMjksMy45LTEuNTEsNy41MTEsNi44NTQsNS4wNDUsMTEuNjc4LDUuOTMzQTkuOTMzLDkuOTMzLDAsMCwwLDU0Ljk2MiwyNjIuMjc0WiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEzLjcyNiAtMTg3LjUyNikiIGZpbGw9InVybCgjbGluZWFyLWdyYWRpZW50LTUpIi8+CiAgICA8L2c+CiAgICA8dGV4dCBpZD0iYmFwZW5kYSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTQgMjYuOCkiIGZpbGw9IiMyMDIwMjAiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtZmFtaWx5PSJTZWdvZVVJLUJvbGQsIFNlZ29lIFVJIiBmb250LXdlaWdodD0iNzAwIiBsZXR0ZXItc3BhY2luZz0iMC4wM2VtIj48dHNwYW4geD0iMCIgeT0iMCI+YmFwZW5kYTwvdHNwYW4+PC90ZXh0PgogICAgPHRleHQgaWQ9Impha2FydGEiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDU2IDQ2LjgpIiBmaWxsPSIjMjAyMDIwIiBzdHJva2U9IiMyMDIwMjAiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMC4zIiBmb250LXNpemU9IjIwIiBmb250LWZhbWlseT0iU2Vnb2VVSSwgU2Vnb2UgVUkiIGxldHRlci1zcGFjaW5nPSIwLjA3ZW0iPjx0c3BhbiB4PSIwIiB5PSIwIj5qYWthcnRhPC90c3Bhbj48L3RleHQ+CiAgPC9nPgo8L3N2Zz4K" alt="Logo Bapenda DKI Jakarta"><img src="data:image/webp;base64,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" alt="Logo Pemprov DKI Jakarta"></div></div>
+<h1>Kalkulator PBB-P2 untuk Wilayah Pemprov DKI Jakarta</h1>
+<p class="sub" style="margin-bottom:8px">Membantu Anda dalam menghitung PBB-P2 berdasarkan Total NJOP dan 0,5%</p>
+<p style="text-align:center;font-weight:700;margin:0 0 16px">----- UP3D Wilayah Kecamatan Penjaringan -----</p>
+
+<section class="card"><h2>Data Wajib Pajak</h2>
+<label for="nama">Nama Wajib Pajak</label>
+<input id="nama" type="text" placeholder="Sesuai nama pada SPPT PBB-P2" autocomplete="off">
+<label for="nop">Nomor Objek Pajak (NOP)</label>
+<input id="nop" type="text" inputmode="numeric" placeholder="31.XX.XXX.XXX.XXX.XXXX.0" maxlength="24" autocomplete="off">
+</section>
+
+<section class="card"><h2>Tahun penerbitan SPPT PBB</h2>
+<select id="thn"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option></select>
+<p class="note" id="dh" style="margin:8px 0 0"></p></section>
+
+<section class="card">
+<h2>1. Data objek pajak (dari SPPT)</h2>
+<div class="row2">
+<div><label for="lt">Luas tanah (m²)</label><input id="lt" type="text" inputmode="numeric" value="0"></div>
+<div><label for="nt">NJOP tanah per m² (Rp)</label><input id="nt" type="text" inputmode="numeric" value="0"></div>
+<div><label for="lb">Luas bangunan (m²)</label><input id="lb" type="text" inputmode="numeric" value="0"></div>
+<div><label for="nb">NJOP bangunan per m² (Rp)</label><input id="nb" type="text" inputmode="numeric" value="0"></div>
+</div>
+<label for="jenis">Jenis objek</label>
+<select id="jenis"><option value="rumah">Rumah tapak</option><option value="rusun">Rumah susun / apartemen</option><option value="non">Non Hunian</option></select>
+</section>
+
+<section class="card">
+<h2>2. Kriteria pembebasan 100%</h2>
+<div class="chk"><span>2a. Total NJOP Rumah Tapak maksimal Rp2.000.000.000 dan rumah susun / apartemen maksimal Rp650.000.000<small id="k2n">Dicek otomatis dari data objek saat tombol Hitung ditekan.</small></span></div>
+<label class="chk"><input id="k1" type="checkbox" checked><span>2b. Wajib Pajak Orang Pribadi</span></label>
+<label class="chk"><input id="k3" type="checkbox" checked><span>2c. Wajib Pajak hanya memiliki 1 objek pajak atau apabila memiliki lebih dari 1 objek pajak maka objek pajak ini adalah objek pajak dengan nilai total NJOP tertinggi<small>Jika hanya punya satu objek, centang. Berdasarkan data per 1 Januari tahun pajak. NJOPTKP Rp60 juta juga hanya diberikan ke objek ini.</small></span></label>
+<label class="chk"><input id="k4" type="checkbox" checked><span>NIK Valid</span></label>
+</section>
+
+<section class="card">
+<h2>3. Data tambahan (pengurangan dan pembatasan kenaikan)</h2>
+<label for="p25" id="p25l">PBB terutang SPPT tahun sebelumnya (Rp)</label>
+<input id="p25" type="text" inputmode="numeric" placeholder="kosong = tidak dihitung; isi 0 jika SPPT Rp0">
+<label class="chk"><input id="baru" type="checkbox"><span>Objek pajak baru ditetapkan pada tahun ini</span></label>
+<label class="chk"><input id="luas" type="checkbox"><span>Ada penambahan luas tanah dan/atau bangunan</span></label>
+<label class="chk"><input id="ind" type="checkbox"><span>Penilaian individual (NJOP baru) ditetapkan pada tahun ini</span></label>
+<label for="per">Periode pembayaran (keringanan pokok)</label>
+<select id="per"></select>
+<details style="margin-top:14px"><summary style="cursor:pointer;font-size:.92rem">Parameter dasar perhitungan (dapat diubah)</summary>
+<div class="row2">
+<div><label for="trf">Tarif (%)</label><input id="trf" type="text" inputmode="decimal" value="0,5"></div>
+<div><label for="tkp">NJOPTKP (Rp)</label><input id="tkp" type="text" inputmode="numeric" value="60.000.000"></div>
+<div><label for="njh">NJKP hunian (%)</label><input id="njh" type="text" inputmode="decimal" value="40"></div>
+<div><label for="njn">NJKP non hunian (%)</label><input id="njn" type="text" inputmode="decimal" value="60"></div>
+</div>
+<p class="note">Nilai standar mengikuti Perda DKI 1/2024. Ubah jika SPPT tahun tersebut memakai angka lain.</p></details>
+</section>
+
+<section class="card">
+<h2>4. Catatan</h2>
+<textarea id="cat" rows="3" maxlength="500" placeholder="Tulis catatan (opsional, maks. 500 karakter)"></textarea>
+</section>
+
+<div class="btns"><button type="button" class="pri" id="btnCetak">Hitung & Cetak Hasilnya</button><button type="button" id="btnClear">Clear</button></div>
+
+<section class="card" id="hasil" style="display:none" aria-live="polite">
+<h2>Pratinjau hasil perhitungan</h2>
+<div id="steps" style="display:none"></div>
+<div class="paper" id="prev"></div>
+<div class="total"><span>PBB-P2 terutang</span><span class="v" id="tot">Rp0</span></div>
+</section>
+
+<section class="card syarat">
+<p>Yang dimaksud NIK Valid, yaitu memenuhi ketentuan sebagai berikut :</p>
+<ol>
+<li>NIK yang diinput adalah NIK untuk nama yang tertera pada SPPT PBB-P2.</li>
+<li>Server data pajak daerah telah terhubung dengan server data kependudukan sehingga setiap NIK yang diinput akan langsung terverifikasi apakah NIK yang didaftarkan tersebut valid.</li>
+<li>Valid yang dimaksud yaitu tercatat pada server data kependudukan, pemilik NIK adalah orang pribadi yang masih hidup, dan nama di SPPT sesuai dengan NIK baik penulisan atau urutan.</li>
+<li>Jika nama wajib pajak yang tertera pada SPPT PBB-P2 sudah meninggal dunia, maka proses pelayanan yang harus dilakukan adalah permohonan mutasi/balik nama PBB-P2.</li>
+</ol>
+<p style="text-align:center;margin:16px 0 0;font-weight:700;color:var(--text)">------UP3D KECAMATAN PENJARINGAN--------</p>
+</section>
+</main>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var rp=new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0});
+var pc=new Intl.NumberFormat('id-ID',{maximumFractionDigits:2});
+var L={};var Y={
+2024:{dh:'Pergub DKI 16/2024 (berlaku sejak awal Juni 2024)',prev:2023,rusun:2e9,cap:25,capL:0,kr:[['0','Setelah 30 November 2024 (tanpa keringanan)'],['10','Sejak berlakunya Pergub s.d. 31 Agustus 2024 (10%)'],['5','1 September – 30 November 2024 (5%)']]},
+2025:{dh:'Kepgub DKI 281/2025 (berlaku sejak 8 April 2025)',prev:2024,rusun:650e6,cap:50,capL:0,kr:[['0','Tidak ada keringanan pembayaran tahun berjalan']]},
+2026:{dh:'Kepgub DKI 339/2026 (berlaku sejak 1 April 2026)',prev:2025,rusun:650e6,cap:5,capL:25,kr:[['0','Setelah 30 September 2026 (tanpa keringanan)'],['10','1 April – 31 Mei 2026 (10%)'],['7.5','1 Juni – 31 Juli 2026 (7,5%)'],['5','1 Agustus – 30 September 2026 (5%)']]}
+};
+function n(i){var s=$(i).value.replace(/\D/g,'');return s?parseInt(s,10):0}
+function f(i){return parseFloat($(i).value.replace(',','.'))||0}
+function row(a,b,c){return '<div class="r"><span>'+a+'</span><span'+(c?' class="'+c+'"':'')+'>'+b+'</span></div>'}
+function st(t,r){return '<div class="st"><b>'+t+'</b>'+r+'</div>'}
+function stale(){$('hasil').style.display='none'}
+function ck(v){return v?'✓ Terpenuhi':'✗ Tidak terpenuhi'}
+function tahun(){
+var yr=+$('thn').value,R=Y[yr];
+$('dh').textContent='Dasar hukum: '+R.dh+'. Perhitungan mengikuti aturan tahun penerbitan SPPT.';
+$('p25l').textContent='PBB terutang SPPT tahun '+R.prev+' (Rp)';
+$('k2n').textContent=yr===2024?'Dicek otomatis saat tombol Hitung ditekan. Aturan 2024: hunian (rumah tapak dan rusun) maksimal Rp2.000.000.000.':'Dicek otomatis dari data objek saat tombol Hitung ditekan.';
+$('per').innerHTML=R.kr.map(function(k){return '<option value="'+k[0]+'">'+k[1]+'</option>'}).join('');
+stale();
+}
+function hitung(){
+var yr=+$('thn').value,R=Y[yr],j=$('jenis').value,h='';
+var nT=n('lt')*n('nt'),nB=n('lb')*n('nb'),njop=nT+nB;
+var top=$('k3').checked,tkp=top?n('tkp'):0,s3=Math.max(0,njop-tkp);
+var njkp=(j==='non'?f('njn'):f('njh'))/100,tarif=f('trf')/100;
+var dasar=s3*njkp,pokok=dasar*tarif;
+var k1=$('k1').checked,k4=$('k4').checked,batas=j==='rusun'?R.rusun:2e9;
+var k2=(j==='rumah'||j==='rusun')&&njop<=batas,bebas=k1&&k2&&top&&k4;
+h+=st('Dasar hukum',row('Tahun penerbitan SPPT',String(yr))+row('Aturan',R.dh));
+h+=st('Langkah 1 – Total NJOP',row('NJOP tanah (luas × NJOP/m²)',rp.format(nT))+row('NJOP bangunan (luas × NJOP/m²)',rp.format(nB))+row('Total NJOP',rp.format(njop)));
+h+=st('Langkah 2 – NJOPTKP',row('NJOPTKP '+(top?'(objek NJOP tertinggi)':'(tidak diberikan)'),rp.format(tkp))+row('NJOP setelah NJOPTKP',rp.format(s3)));
+h+=st('Langkah 3 – Dasar pengenaan',row('NJKP ('+(j==='non'?'non hunian':'hunian')+')',pc.format(njkp*100)+'%')+row('NJOP × NJKP',rp.format(dasar)));
+h+=st('Langkah 4 – PBB-P2 pokok',row('Tarif',pc.format(tarif*100)+'%')+row('Dasar pengenaan × tarif',rp.format(pokok)));
+var kj=(j==='rumah'||j==='rusun')?(yr===2024?'Hunian dengan Total NJOP ≤ '+rp.format(batas):'Total NJOP ≤ '+rp.format(batas)+' ('+(j==='rusun'?'rusun/apartemen':'rumah tapak')+')'):'Jenis objek harus hunian (rumah tapak atau rusun/apartemen)';
+h+=st('Langkah 5 – Cek kriteria pembebasan 100% (aturan '+yr+')',row('2a. '+kj,ck(k2),k2?'ok':'no')+row('2b. Wajib Pajak Orang Pribadi',ck(k1),k1?'ok':'no')+row('2c. Objek dengan Total NJOP tertinggi',ck(top),top?'ok':'no')+row('NIK Valid',ck(k4),k4?'ok':'no')+row('Hasil',bebas?'DIBEBASKAN 100%':'Tidak dibebaskan',bebas?'ok':'no'));
+var total=0,P=[];
+if(bebas){P.push({a:'Pembebasan pokok 100%',v:fmt(pokok),s:fmt(pokok)});h+=st('Langkah 6 – Pembebasan pokok',row('PBB-P2 pokok dibebaskan',rp.format(pokok))+row('PBB-P2 terutang',rp.format(0),'ok'))}
+else{
+var blank=$('p25').value.trim()==='',prev=n('p25'),a=pokok,r='',pt=R.prev;
+if(blank){P.push({a:'SPPT tahun '+pt,v:'Belum diisi - pengurangan dan pembatasan kenaikan tidak dihitung'});r+=row('SPPT tahun '+pt,'Belum diisi – pengurangan dan pembatasan kenaikan tidak dihitung')}
+else if(prev===0){
+ if($('baru').checked){P.push({a:'Pengurangan 50%',v:'Tidak berlaku (objek pajak baru)'});r+=row('Pengurangan 50%','Tidak berlaku (objek pajak baru)')}
+ else{a=pokok*0.5;P.push({a:(yr===2024?'Pembebasan':'Pengurangan')+' pokok 50% (SPPT tahun '+pt+' = Rp0)',v:fmt(pokok-a),s:fmt(pokok-a)});r+=row('SPPT '+pt+' = Rp0 → '+(yr===2024?'pembebasan':'pengurangan')+' pokok 50%',rp.format(a))}
+}else{
+ var cp=R.cap,ex=false;
+ if(yr===2026){if($('luas').checked)cp=R.capL;else if($('ind').checked)ex=true}
+ else if($('luas').checked||$('ind').checked)ex=true;
+ if(ex){P.push({a:'Batas kenaikan',v:'Tidak berlaku (penambahan luas/penilaian individual)'});r+=row('Batas kenaikan','Tidak berlaku (penambahan luas/penilaian individual)')}
+ else{var cap=prev*(1+cp/100);P.push({a:'Batas kenaikan '+cp+'% (PBB '+pt+' x '+(100+cp)+'%)',v:fmt(cap)});r+=row('Batas kenaikan '+cp+'% (PBB '+pt+' × '+(100+cp)+'%)',rp.format(cap));
+  if(pokok>cap){a=cap;P.push({a:'Pembebasan pokok sebesar selisih',v:fmt(pokok-cap),s:fmt(pokok-cap)});r+=row('Pembebasan pokok sebesar selisih',rp.format(pokok-cap))}else{P.push({a:'Kenaikan masih dalam batas',v:'Tidak ada pengurangan'});r+=row('Kenaikan masih dalam batas','Tidak ada pengurangan')}
+  r+=row('PBB setelah batas kenaikan',rp.format(a))}
+}
+var d=parseFloat($('per').value)||0;total=a*(1-d/100);if(d){P.push({a:'Keringanan periode pembayaran '+pc.format(d)+'%',v:fmt(a-total),s:fmt(a-total)})}
+r+=row('Keringanan periode pembayaran',d?pc.format(d)+'% → '+rp.format(total):'Tidak ada');
+h+=st('Langkah 6 – Pengurangan, pembatasan kenaikan, keringanan',r)}
+L={yr:yr,top:top,nT:nT,nB:nB,njop:njop,tkp:tkp,s3:s3,njkp:njkp,tarif:tarif,dasar:dasar,pokok:pokok,total:total,P:P};
+$('steps').innerHTML=h;$('tot').textContent=rp.format(total);
+}
+['lt','nt','lb','nb','p25','tkp'].forEach(function(i){var e=$(i);e.addEventListener('input',stale);e.addEventListener('blur',function(){var s=e.value.replace(/\D/g,'');e.value=s?parseInt(s,10).toLocaleString('id-ID'):(i==='p25'?'':'0')});e.addEventListener('focus',function(){e.value=e.value.replace(/\D/g,'');if(e.value==='0'){e.select()}})});
+['trf','njh','njn'].forEach(function(i){$(i).addEventListener('input',stale)});
+$('nop').addEventListener('input',function(){this.value=maskNop(this.value);stale()});
+['nama','cat'].forEach(function(i){$(i).addEventListener('input',stale)});
+['jenis','k1','k3','k4','baru','luas','ind','per'].forEach(function(i){$(i).addEventListener('change',stale)});
+$('thn').addEventListener('change',tahun);
+function sanit(s){var m={'✓':'','✗':'','→':'->','≤':'<=','×':'x','–':'-','—':'-','²':'2','“':'"','”':'"','’':"'"};return String(s).replace(/[^\x20-\x7e]/g,function(c){return m[c]!==undefined?m[c]:' '}).replace(/\s+/g,' ').trim()}
+function esc(s){return s.replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)')}
+function wrap(s,n){var w=sanit(s).split(' '),out=[],cur='';w.forEach(function(x){if(cur&&(cur+' '+x).length>n){out.push(cur);cur=x}else{cur=cur?cur+' '+x:x}});if(cur)out.push(cur);return out.length?out:['']}
+var nf=new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
+function fmt(v){return nf.format(Math.round(v))}
+function tw(s,sz){var w=0;for(var i=0;i<s.length;i++){var c=s.charAt(i);
+ w+=/[0-9]/.test(c)?556:/[iltfjI.,:;!|']/.test(c)?270:c===' '?278:/[rJ()\-\/]/.test(c)?335:/[mwMW%]/.test(c)?820:/[A-Z]/.test(c)?680:/[<=>]/.test(c)?584:520}
+ return w*sz/1000}
+function wrapw(s,maxW,sz){var w=sanit(s).split(' '),out=[],cur='';w.forEach(function(x){if(cur&&tw(cur+' '+x,sz)*1.03>maxW){out.push(cur);cur=x}else{cur=cur?cur+' '+x:x}});if(cur)out.push(cur);return out.length?out:['']}
+function tata(d,k){
+var cur=[],y=894,LH=13*k,VX=330,C1=372,OP=380,C2=466,RR=558;
+function txt(x,yy,s,f,sz){cur.push('BT /'+f+' '+(Math.round(sz*k*10)/10)+' Tf '+x.toFixed(1)+' '+yy.toFixed(1)+' Td ('+esc(sanit(s))+') Tj ET')}
+function rtxt(r,yy,s,f,sz){s=sanit(s);txt(r-tw(s,sz*k),yy,s,f,sz)}
+function line(x1,x2,yy,w){cur.push((w||0.5)+' w '+x1.toFixed(1)+' '+yy.toFixed(1)+' m '+x2.toFixed(1)+' '+yy.toFixed(1)+' l S')}
+txt(50,y,'KALKULATOR PBB-P2 WILAYAH PEMPROV DKI JAKARTA','F2',14);y-=17*k;
+txt(50,y,'UP3D Wilayah Kecamatan Penjaringan','F2',10);y-=14*k;
+txt(50,y,'Tahun penerbitan SPPT PBB: '+d.yr+'   |   Dicetak: '+new Date().toLocaleString('id-ID'),'F1',9);y-=8*k;
+line(50,560,y,0.5);y-=4*k;
+d.blocks.forEach(function(b){
+ if(b.t==='h'){y-=13*k;txt(50,y,b.s,'F2',11);y-=15*k}
+ else if(b.t==='r'){
+  var f=b.bd?'F2':'F1',a=wrapw(b.a,264,10*k),v=wrapw(b.b,228,10*k),n=Math.max(a.length,v.length);
+  for(var i=0;i<n;i++){if(a[i])txt(56,y-i*LH,a[i],f,10);if(v[i])txt(VX,y-i*LH,v[i],f,10)}
+  if(b.s){rtxt(RR,y,b.s,'F1',10);line(RR-84,RR,y-3*k,0.6)}
+  y-=n*LH}
+ else if(b.t==='c'){
+  txt(56,y,b.a,'F1',10);
+  if(b.q){rtxt(C1,y,b.q,'F1',10);txt(OP,y,'x','F1',10)}
+  if(b.m)rtxt(C2,y,b.m,'F1',10);
+  rtxt(RR,y,b.r,'F1',10);
+  if(b.ul)line(RR-84,RR,y-3*k,0.6);
+  y-=LH}
+ else if(b.t==='sp'){y-=LH*0.8}
+ else if(b.t==='n'){var a2=wrapw(b.s,490,10*k);a2.forEach(function(s,i){txt(56,y-i*LH,s,'F1',10)});y-=a2.length*LH}
+ else if(b.t==='t'){y-=8*k;txt(56,y,b.a,'F2',11);rtxt(RR,y,b.v,'F1',11);y-=12*k}
+});
+return {c:cur.join('\n'),y:y};
+}
+function buatPdf(d){
+var k,r;
+for(k=1;k>=0.5;k-=0.025){r=tata(d,k);if(r.y>=34)break}
+var pages=[r.c],N=1,objs=[];
+objs.push('<< /Type /Catalog /Pages 2 0 R >>');
+objs.push('<< /Type /Pages /Kids [5 0 R] /Count 1 >>');
+objs.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+objs.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+objs.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 609.45 935.43] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>');
+objs.push('<< /Length '+pages[0].length+' >>\nstream\n'+pages[0]+'\nendstream');
+var out='%PDF-1.4\n',off=[];
+objs.forEach(function(o,i){off.push(out.length);out+=(i+1)+' 0 obj\n'+o+'\nendobj\n'});
+var xr=out.length;
+out+='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n';
+off.forEach(function(o){out+=('0000000000'+o).slice(-10)+' 00000 n \n'});
+out+='trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF';
+var u=new Uint8Array(out.length);for(var i=0;i<out.length;i++)u[i]=out.charCodeAt(i)&255;
+return u;
+}
+async function simpan(bytes,name){
+var dl=null;
+try{if(window.claude&&window.claude.use){dl=await window.claude.use('downloads')}}catch(e){dl=null}
+if(dl){try{await dl.save({filename:name,data:bytes});return}catch(e){if(e&&e.code==='declined')return}}
+var u=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');
+a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+setTimeout(function(){URL.revokeObjectURL(u)},5000);
+}
+function maskNop(v){var d=v.replace(/\D/g,'').slice(0,18),p=[2,2,3,3,3,4,1],o=[],i=0;p.forEach(function(n){if(i<d.length){o.push(d.substr(i,n));i+=n}});return o.join('.')}
+function susun(yr){
+var sel=function(i){return $(i).options[$(i).selectedIndex].text},ya=function(i){return $(i).checked?'Ya':'Tidak'};
+var B=[],j=$('jenis').value,hun=j==='non'?'non hunian':'hunian';
+B.push({t:'h',s:'Data Wajib Pajak'});
+B.push({t:'r',a:'Nama Wajib Pajak',b:$('nama').value.trim()||'-'});
+B.push({t:'r',a:'Nomor Objek Pajak (NOP)',b:$('nop').value.trim()||'-'});
+B.push({t:'h',s:'Data objek Pajak'});
+B.push({t:'r',a:'Jenis objek',b:sel('jenis')});
+B.push({t:'r',a:'PBB terutang SPPT tahun '+(+yr-1),b:$('p25').value||'Belum diisi'});
+B.push({t:'r',a:'Objek pajak baru',b:ya('baru')});
+B.push({t:'r',a:'Penambahan luas tanah/bangunan',b:ya('luas')});
+B.push({t:'r',a:'Penilaian individual baru',b:ya('ind')});
+B.push({t:'r',a:'Periode pembayaran',b:sel('per')});
+B.push({t:'h',s:'Perhitungan Tahun '+yr});
+B.push({t:'c',a:'Total NJOP Tanah',q:fmt(n('lt')),m:fmt(n('nt')),r:fmt(L.nT)});
+B.push({t:'c',a:'Total NJOP Bangunan',q:fmt(n('lb')),m:fmt(n('nb')),r:fmt(L.nB),ul:1});
+B.push({t:'c',a:'Total NJOP PBB',r:fmt(L.njop)});
+B.push({t:'sp'});
+B.push({t:'c',a:'NJOPTKP',r:fmt(L.tkp),ul:1});
+B.push({t:'c',a:'NJOP dikurangi NJOPTKP',r:fmt(L.s3)});
+B.push({t:'c',a:'NJOP untuk perhitungan PBB-P2 ('+hun+')',q:pc.format(L.njkp*100)+'%',m:fmt(L.s3),r:fmt(L.dasar)});
+B.push({t:'c',a:'PBB-P2 yang Terutang',q:pc.format(L.tarif*100)+'%',m:fmt(L.dasar),r:fmt(L.pokok)});
+B.push({t:'h',s:'Cek kriteria pembebasan 100%'});
+Array.prototype.forEach.call(document.querySelectorAll('#steps .st'),function(st){
+ if(st.querySelector('b').textContent.indexOf('Langkah 5')!==0)return;
+ Array.prototype.forEach.call(st.querySelectorAll('.r'),function(r){
+  var a=r.children[0].textContent.replace(/^2([abc])\. /,'$1. ');if(a==='NIK Valid')a='d. NIK Valid';
+  B.push({t:'r',a:a,b:r.children[1].textContent,bd:a==='Hasil'});
+ });
+});
+B.push({t:'h',s:'Pengurangan, pembatasan kenaikan, keringanan'});
+(L.P||[]).forEach(function(p){B.push({t:'r',a:p.a,b:p.v,s:p.s})});
+var cat=$('cat').value.trim();
+if(cat){B.push({t:'h',s:'Catatan'});B.push({t:'n',s:cat})}
+B.push({t:'t',a:'PBB - P2 yang masih harus dibayar',v:fmt(L.total)});
+return B;
+}
+function tampil(yr,B){
+var e=function(s){return sanit(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+var h='<div class="pin"><div class="pt">KALKULATOR PBB-P2 WILAYAH PEMPROV DKI JAKARTA</div><div class="pu">UP3D Wilayah Kecamatan Penjaringan</div><div class="pm">Tahun penerbitan SPPT PBB: '+yr+' | Dicetak: '+e(new Date().toLocaleString('id-ID'))+'</div><hr>';
+B.forEach(function(b){
+ if(b.t==='h')h+='<div class="ph">'+e(b.s)+'</div>';
+ else if(b.t==='r')h+='<div class="pr'+(b.s?' ps':'')+(b.bd?' pb':'')+'"><span>'+e(b.a)+'</span><span>'+e(b.b)+'</span>'+(b.s?'<span>'+e(b.s)+'</span>':'')+'</div>';
+ else if(b.t==='c')h+='<div class="pc"><span>'+e(b.a)+'</span><span class="n">'+e(b.q||'')+'</span><span class="o">'+(b.q?'x':'')+'</span><span class="n">'+e(b.m||'')+'</span><span class="o"></span><span class="n'+(b.ul?' u':'')+'">'+e(b.r)+'</span></div>';
+ else if(b.t==='sp')h+='<div style="height:10px"></div>';
+ else if(b.t==='n')h+='<div class="pr"><span>'+e(b.s)+'</span></div>';
+ else if(b.t==='t')h+='<div class="pr pg" style="margin-top:6px"><span>'+e(b.a)+'</span><span>'+e(b.v)+'</span></div>';
+});
+$('prev').innerHTML=h+'</div>';
+}
+function cetak(){
+hitung();var x=$('hasil');x.style.display='block';
+var yr=$('thn').value,B=susun(yr);
+tampil(yr,B);
+simpan(buatPdf({yr:yr,blocks:B}),'PBB-P2-DKI-Jakarta-'+yr+'.pdf');
+x.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+$('btnCetak').addEventListener('click',cetak);
+$('btnClear').addEventListener('click',function(){['lt','nt','lb','nb'].forEach(function(i){$(i).value='0'});$('nama').value='';$('nop').value='';$('cat').value='';$('p25').value='';$('trf').value='0,5';$('tkp').value='60.000.000';$('njh').value='40';$('njn').value='60';$('jenis').selectedIndex=0;$('thn').value='2026';['k1','k3','k4'].forEach(function(i){$(i).checked=true});['baru','luas','ind'].forEach(function(i){$(i).checked=false});document.querySelector('details').open=false;tahun();$('steps').innerHTML='';$('tot').textContent='Rp0';if(document.activeElement&&document.activeElement.blur){document.activeElement.blur()}window.scrollTo({top:0,behavior:'smooth'})});
+tahun();
+})();
+</script>
+</body>
+</html>

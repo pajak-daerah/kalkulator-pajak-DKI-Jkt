@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kalkulator Pajak Restoran (PBJT) DKI Jakarta</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2333;--mut:#6b7385;--bd:#dfe3ec;--pri:#c8213f;--pri2:#f5a623;--ok:#12806f;--in:#f0f2f8;--hl:#fdecef;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10172a;--card:#1a2340;--tx:#eceff7;--mut:#9aa3ba;--bd:#2d3a60;--pri:#ef5b76;--ok:#4ecdb8;--in:#121a33;--hl:#3a2233}}
+:root[data-theme="dark"]{--bg:#10172a;--card:#1a2340;--tx:#eceff7;--mut:#9aa3ba;--bd:#2d3a60;--pri:#ef5b76;--ok:#4ecdb8;--in:#121a33;--hl:#3a2233}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--tx);padding:16px;min-height:100vh}
+.wrap{max-width:960px;margin:0 auto}
+header{text-align:center;padding:14px 0 18px}
+h1{font-size:1.45rem;color:var(--pri)}
+header p{color:var(--mut);font-size:.88rem;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:780px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px}
+h2{font-size:1rem;margin-bottom:12px}
+label{display:block;font-size:.8rem;color:var(--mut);margin:10px 0 4px}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--in);color:var(--tx);font-size:.95rem}
+input:focus,select:focus{outline:2px solid var(--pri);outline-offset:0}
+.tabs{display:flex;gap:6px;margin-bottom:6px}
+.tab{flex:1;padding:9px 4px;border:1px solid var(--bd);background:var(--in);color:var(--mut);border-radius:8px;font-size:.78rem;cursor:pointer}
+.tab.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:600}
+.item{display:grid;grid-template-columns:1fr 56px 100px 32px;gap:6px;margin-bottom:6px}
+.item button{border:1px solid var(--bd);background:var(--in);color:var(--mut);border-radius:8px;cursor:pointer}
+.btn{width:100%;padding:11px;border:0;border-radius:9px;background:var(--pri);color:#fff;font-weight:600;font-size:.92rem;cursor:pointer;margin-top:10px}
+.btn.alt{background:var(--in);color:var(--tx);border:1px solid var(--bd)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:.88rem}
+.chk input{width:18px;height:18px}
+.chk label{margin:0;color:var(--tx);font-size:.88rem}
+.hint{font-size:.75rem;color:var(--mut);margin-top:3px}
+.hide{display:none!important}
+.r{display:flex;justify-content:space-between;padding:8px 10px;border-radius:8px;font-size:.9rem;gap:10px}
+.r:nth-child(odd){background:var(--in)}
+.r.t{font-weight:700;border:1px solid var(--bd)}
+.r.m{color:var(--pri)}.r.p{color:var(--ok)}
+.big{text-align:center;margin-top:14px;padding:16px;border-radius:12px;background:var(--hl);border:1px dashed var(--pri)}
+.big b{display:block;font-size:1.7rem;color:var(--pri)}
+.big span{font-size:.78rem;color:var(--mut)}
+.note{margin-top:12px;font-size:.8rem;color:var(--mut);line-height:1.5}
+.warn{margin-top:10px;padding:10px;border-radius:8px;background:var(--hl);color:var(--pri);font-size:.82rem}
+.h{display:flex;justify-content:space-between;font-size:.82rem;padding:7px 0;border-bottom:1px solid var(--bd)}
+@media print{.tabs,.btn,.chk,#clr,#hist,footer,section:first-child{display:none!important}.grid{display:block}body{background:#fff;color:#000}}
+footer{text-align:center;color:var(--mut);font-size:.75rem;padding:20px 8px;line-height:1.6}
+.wide{grid-column:1/-1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>🧾 Kalkulator Pajak Restoran (PBJT)</h1>
+<div style="font-weight:600;margin-top:4px">--- UP3D Wilayah Kecamatan Penjaringan ---</div>
+<p>PBJT Makanan &amp; Minuman · Provinsi DKI Jakarta · Tarif 10%</p>
+</header>
+
+<div class="grid">
+<section class="card">
+<h2>⚙️ Data Transaksi</h2>
+<div class="tabs">
+<button class="tab on" data-m="normal">Tagihan</button>
+<button class="tab" data-m="voucher">Voucher</button>
+<button class="tab" data-m="termasuk">Sudah Termasuk Pajak</button>
+</div>
+
+<div id="mNormal">
+<label>Total Tagihan (Rp)</label>
+<input type="text" inputmode="numeric" class="rp" id="bill" value="0">
+<div class="hint">Isi total tagihan menu sebelum service charge dan diskon. Hasil langsung dihitung.</div>
+<div class="row2">
+<div><label>Service Charge (%)</label><input type="number" id="sc" value="0" min="0" max="100" step="0.5"></div>
+<div><label>Diskon (Rp)</label><input type="text" inputmode="numeric" class="rp" id="disc" value="0"></div>
+</div>
+<div class="hint">Service charge masuk DPP; diskon mengurangi DPP.</div>
+</div>
+
+<div id="mVoucher" class="hide">
+<label>Jenis Voucher</label>
+<select id="vType"><option value="nominal">Bernilai nominal</option><option value="non">Tanpa nilai nominal</option></select>
+<label id="vLbl">Nilai Nominal Voucher (Rp)</label>
+<input type="text" inputmode="numeric" class="rp" id="vVal" value="0">
+<div class="hint" id="vHint">DPP = nilai nominal voucher.</div>
+</div>
+
+<div id="mTermasuk" class="hide">
+<label>Total Dibayar, Sudah Termasuk Pajak (Rp)</label>
+<input type="text" inputmode="numeric" class="rp" id="tot" value="0">
+<div class="hint">DPP = Total ÷ 1,1 (pajak 10% dihitung mundur).</div>
+</div>
+
+<hr style="border:0;border-top:1px solid var(--bd);margin:16px 0 4px">
+<div class="chk"><input type="checkbox" id="small"><label for="small">Peredaran usaha ≤ Rp 42 juta/bulan</label></div>
+<div class="chk"><input type="checkbox" id="meja" checked><label for="meja">Ada fasilitas meja/kursi/peralatan makan</label></div>
+<label>Keringanan/pengurangan pajak (%) — opsional</label>
+<input type="number" id="ker" value="0" min="0" max="100">
+<div class="hint">Isi hanya jika ada keputusan Gubernur yang berlaku untuk masa pajak Anda (mis. 20%).</div>
+<button class="btn" id="hit">🧮 Hitung PBJT</button>
+<button class="btn alt" id="save">💾 Simpan ke Riwayat</button>
+<button class="btn alt" id="reset">↺ Reset</button>
+</section>
+
+<section class="card">
+<h2>📊 Hasil Perhitungan</h2>
+<div id="resEmpty" class="note" style="text-align:center;padding:30px 10px">🧮<br>Isi data transaksi, lalu tekan <b>Hitung PBJT</b> untuk menampilkan rincian perhitungan.</div>
+<div id="resBox" class="hide">
+<div id="out"></div>
+<div id="warn"></div>
+<button class="btn" id="pdf">📄 Simpan PDF</button>
+<button class="btn alt" id="copy">📋 Salin Ringkasan</button>
+<div class="note" id="info"></div>
+</div>
+</section>
+
+<section class="card wide">
+<h2>🕘 Riwayat Perhitungan</h2>
+<div id="hist"></div>
+<button class="btn alt" id="clr" style="max-width:220px">Hapus Riwayat</button>
+</section>
+</div>
+
+<footer>
+Dasar: Perda DKI Jakarta No. 1 Tahun 2024 (Pasal 45) dan peraturan pelaksanaannya. Tarif 10%; usaha dengan peredaran ≤ Rp 42 juta/bulan dikecualikan.<br>
+Alat bantu hitung/edukasi, bukan pengganti ketentuan resmi atau konsultasi dengan Bapenda DKI Jakarta.
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const pn=v=>parseFloat(String(v).replace(/\./g,''))||0;
+const fmt=n=>String(Math.round(n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const rp=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
+let mode='normal', items=[{n:'',q:1,p:150000}], last=null;
+
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  mode=b.dataset.m;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  $('mNormal').classList.toggle('hide',mode!=='normal');
+  $('mVoucher').classList.toggle('hide',mode!=='voucher');
+  $('mTermasuk').classList.toggle('hide',mode!=='termasuk');
+  calc();
+});
+$('vType').onchange=()=>{
+  const n=$('vType').value==='nominal';
+  $('vLbl').textContent=n?'Nilai Nominal Voucher (Rp)':'Harga Jual Normal Barang Sejenis (Rp)';
+  $('vHint').textContent=n?'DPP = nilai nominal voucher.':'DPP = harga jual normal barang/jasa sejenis di wilayah DKI Jakarta.';
+  calc();
+};
+
+function calc(){
+  const rows=[], info=[]; let dpp=0, bayar=null;
+  const num=id=>$(id).classList.contains('rp')?pn($(id).value):(parseFloat($(id).value)||0);
+  if(mode==='normal'){
+    const sub=num('bill');
+    const scp=num('sc'), sc=sub*scp/100, d=num('disc');
+    dpp=Math.max(0,sub+sc-d);
+    rows.push(['Total Tagihan',sub,'']);
+    if(sc) rows.push([`Service Charge (${scp}%)`,sc,'p']);
+    if(d) rows.push(['Diskon',-d,'m']);
+    if(sc) info.push('Service charge termasuk dalam dasar pengenaan pajak.');
+  } else if(mode==='voucher'){
+    dpp=num('vVal');
+    rows.push([$('vType').value==='nominal'?'Nilai Nominal Voucher':'Harga Jual Normal Sejenis',dpp,'']);
+  } else {
+    bayar=num('tot'); dpp=bayar/1.1;
+    rows.push(['Total Dibayar (termasuk pajak)',bayar,'']);
+    info.push('Harga dianggap sudah memuat pajak 10%, sehingga DPP = total ÷ 1,1.');
+  }
+  let warn='';
+  if($('small').checked){
+    dpp=0; warn='Peredaran usaha ≤ Rp 42 juta/bulan dikecualikan dari objek PBJT (Perda 1/2024 Pasal 45 ayat 2 huruf a). Tidak berlaku untuk penjualan insidental.';
+  } else if(!$('meja').checked){
+    warn='Tanpa fasilitas penyajian (meja, kursi, peralatan makan) usaha mungkin bukan objek PBJT restoran. Pastikan status usaha Anda ke Bapenda.';
+  }
+  rows.push(['Dasar Pengenaan Pajak (DPP)',dpp,'t']);
+  const pjk=dpp*0.10, kp=Math.min(100,Math.max(0,num('ker'))), kv=pjk*kp/100, pa=pjk-kv;
+  rows.push(['PBJT 10%',pjk,'p']);
+  if(kv) rows.push([`Keringanan (${kp}%)`,-kv,'m']);
+  rows.push(['PBJT yang Harus Dibayar',pa,'t']);
+  const total= bayar!==null && !$('small').checked ? bayar : dpp+pa;
+  rows.push(['Total Dibayar Konsumen',total,'t']);
+  $('out').innerHTML=rows.map(r=>`<div class="r ${r[2]}"><span>${r[0]}</span><b>${rp(r[1])}</b></div>`).join('')
+   +`<div class="big"><b>${rp(pa)}</b><span>PBJT Makanan &amp; Minuman</span></div>`;
+  $('warn').innerHTML=warn?`<div class="warn">⚠️ ${warn}</div>`:'';
+  $('info').innerHTML=info.map(i=>'💡 '+i).join('<br>');
+  last={t:new Date().toLocaleString('id-ID'),m:mode,dpp,pa,total,rows,warn,items:null};
+}
+
+function loadHist(){try{return JSON.parse(localStorage.getItem('pbjt_h')||'[]')}catch(e){return[]}}
+function saveHist(h){try{localStorage.setItem('pbjt_h',JSON.stringify(h))}catch(e){}}
+function renderHist(){
+  const h=loadHist();
+  $('hist').innerHTML=h.length?h.map(x=>`<div class="h"><span>${x.t}<br><small style="color:var(--mut)">DPP ${rp(x.dpp)}</small></span><b>${rp(x.pa)}</b></div>`).join(''):'<div class="hint">Belum ada riwayat tersimpan di perangkat ini.</div>';
+}
+$('save').onclick=()=>{const h=loadHist();h.unshift(last);saveHist(h.slice(0,10));renderHist()};
+$('clr').onclick=()=>{saveHist([]);renderHist()};
+$('copy').onclick=async()=>{
+  const s=`Perhitungan PBJT Makanan & Minuman DKI Jakarta (${last.t})\nDPP: ${rp(last.dpp)}\nPBJT: ${rp(last.pa)}\nTotal dibayar: ${rp(last.total)}`;
+  try{await navigator.clipboard.writeText(s);$('copy').textContent='✓ Tersalin'}catch(e){$('copy').textContent='Gagal menyalin'}
+  setTimeout(()=>$('copy').textContent='📋 Salin Ringkasan',1500);
+};
+$('reset').onclick=()=>{
+  $('bill').value='0';
+  ['sc','disc','ker'].forEach(i=>$(i).value=0);
+  $('vVal').value='0';$('tot').value='0';
+  $('small').checked=false;$('meja').checked=true;calc();$('resBox').classList.add('hide');$('resEmpty').classList.remove('hide');
+};
+['sc','disc','bill','vVal','tot','small','meja','ker'].forEach(i=>$(i).addEventListener('input',calc));
+document.addEventListener('focusin',e=>{const t=e.target;if(t.classList&&t.classList.contains('rp')&&t.value==='0')setTimeout(()=>{try{t.select()}catch(_){}},0)});
+document.addEventListener('input',e=>{
+  const t=e.target; if(!t.classList||!t.classList.contains('rp')) return;
+  const before=t.value.slice(0,t.selectionStart||0).replace(/\D/g,'').length;
+  const dg=t.value.replace(/\D/g,'').replace(/^0+(?=\d)/,'');
+  t.value=dg.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  let c=0,i=0; while(i<t.value.length&&c<before){ if(/\d/.test(t.value[i])) c++; i++; }
+  try{t.setSelectionRange(i,i)}catch(_){}
+});
+
+const safe=s=>String(s).replace(/≤/g,'<=').replace(/[^\x20-\xff]/g,'');
+async function makePdf(){
+  const J=window.jspdf&&window.jspdf.jsPDF; if(!J) return;
+  let d=null; try{d=window.claude&&await claude.use('downloads')}catch(e){}
+  calc();
+  const doc=new J({unit:'mm',format:'a4'}); const L=20,R=190,R2=R-34; let y=24;
+  const get=re=>last.rows.find(r=>re.test(r[0]));
+  const txt=(t,x,o)=>doc.text(safe(t),x,y,o);
+  const B=()=>doc.setFont('helvetica','bold'), N=()=>doc.setFont('helvetica','normal');
+  const ln=x=>{const yy=y-6.2;doc.setDrawColor(0);doc.setLineWidth(.35);doc.line(x,yy,R,yy)};
+  const row=(a,v,b)=>{b?B():N();txt(a,L);txt(fmt(Math.abs(v)),R,{align:'right'});y+=8.6};
+  doc.setFontSize(15);B();txt('Perhitungan PBJT Makanan & Minuman',L);y+=6;
+  doc.setFontSize(10);N();txt('Provinsi DKI Jakarta  |  Tarif 10%  |  '+last.t,L);y+=14;
+  doc.setFontSize(13);
+  const f=last.rows[0], sc=get(/^Service/), dk=get(/^Diskon/), dp=get(/^Dasar/), pj=get(/^PBJT 10/), kr=get(/^Keringanan/);
+  row(f[0],f[1]);
+  if(sc) row(sc[0],sc[1]);
+  if(sc&&dk){ln(R2);row('',f[1]+sc[1])}
+  if(dk) row('Diskon',dk[1]);
+  ln(R2); row(dp[0],dp[1]);
+  B();txt('PBJT yang harus dibayar',L);txt('10%  x',L+80);txt(fmt(dp[1]),R-43,{align:'right'});txt(fmt(pj[1]),R,{align:'right'});y+=8.6;
+  if(kr) row(kr[0],kr[1]);
+  ln(R2); row('Total dibayar konsumen',last.total);
+  y+=5; ln(L); row('PBJT yang harus disetorkan',last.pa,true);
+  y+=6; doc.setFontSize(9);N();
+  if(last.warn){doc.splitTextToSize('Catatan: '+safe(last.warn),R-L).forEach(t=>{txt(t,L);y+=4})}
+  y+=2; doc.splitTextToSize('Dasar: Perda DKI Jakarta No. 1 Tahun 2024. Hasil alat bantu hitung/edukasi, bukan pengganti ketentuan resmi Bapenda DKI Jakarta.',R-L).forEach(t=>{txt(t,L);y+=4});
+  if(d){try{await d.save({filename:'perhitungan-pbjt.pdf',data:doc.output('arraybuffer')})}catch(e){}}
+  else doc.save('perhitungan-pbjt.pdf');
+}
+$('hit').onclick=()=>{calc();$('resEmpty').classList.add('hide');$('resBox').classList.remove('hide');$('resBox').scrollIntoView({behavior:'smooth',block:'start'})};
+$('pdf').onclick=makePdf;
+
+calc();renderHist();
+</script>
+</body>
+</html>

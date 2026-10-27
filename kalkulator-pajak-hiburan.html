@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kalkulator Pajak Hiburan (PBJT Kesenian &amp; Hiburan) DKI Jakarta</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2333;--mut:#6b7385;--bd:#dfe3ec;--pri:#7c3aed;--ok:#12806f;--in:#f0f2f8;--hl:#f1e9fd;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14122b;--card:#1f1b3d;--tx:#eceff7;--mut:#a29fbd;--bd:#342f5e;--pri:#a78bfa;--ok:#4ecdb8;--in:#171434;--hl:#2d2552}}
+:root[data-theme="dark"]{--bg:#14122b;--card:#1f1b3d;--tx:#eceff7;--mut:#a29fbd;--bd:#342f5e;--pri:#a78bfa;--ok:#4ecdb8;--in:#171434;--hl:#2d2552}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--tx);padding:16px;min-height:100vh}
+.wrap{max-width:960px;margin:0 auto}
+header{text-align:center;padding:14px 0 18px}
+h1{font-size:1.45rem;color:var(--pri)}
+header p{color:var(--mut);font-size:.88rem;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:780px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px}
+h2{font-size:1rem;margin-bottom:12px}
+label{display:block;font-size:.8rem;color:var(--mut);margin:10px 0 4px}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--in);color:var(--tx);font-size:.95rem}
+input:focus,select:focus{outline:2px solid var(--pri)}
+.tabs{display:flex;gap:6px;margin:12px 0 6px}
+.tab{flex:1;padding:9px 4px;border:1px solid var(--bd);background:var(--in);color:var(--mut);border-radius:8px;font-size:.78rem;cursor:pointer}
+.tab.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:600}
+.btn{width:100%;padding:11px;border:0;border-radius:9px;background:var(--pri);color:#fff;font-weight:600;font-size:.92rem;cursor:pointer;margin-top:10px}
+.btn.alt{background:var(--in);color:var(--tx);border:1px solid var(--bd)}
+.chk{display:flex;gap:8px;align-items:flex-start;margin-top:9px}
+.chk input{width:18px;height:18px;flex-shrink:0;margin-top:1px}
+.chk label{margin:0;color:var(--tx);font-size:.85rem}
+.chk input:disabled+label{opacity:.45}
+.sub{font-size:.75rem;color:var(--pri);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-top:14px}
+.hint{font-size:.75rem;color:var(--mut);margin-top:3px}
+.hide{display:none!important}
+.r{display:flex;justify-content:space-between;padding:8px 10px;border-radius:8px;font-size:.9rem;gap:10px}
+.r:nth-child(odd){background:var(--in)}
+.r.t{font-weight:700;border:1px solid var(--bd)}
+.r.m{color:#c8213f}.r.p{color:var(--ok)}
+.jn{padding:9px 12px;border-left:3px solid var(--pri);background:var(--hl);border-radius:8px;font-weight:600;margin-bottom:10px;font-size:.9rem}
+.big{text-align:center;margin-top:14px;padding:16px;border-radius:12px;background:var(--hl);border:1px dashed var(--pri)}
+.big b{display:block;font-size:1.7rem;color:var(--pri)}
+.big span{font-size:.78rem;color:var(--mut)}
+.note{margin-top:12px;font-size:.8rem;color:var(--mut);line-height:1.5}
+.h{display:flex;justify-content:space-between;font-size:.82rem;padding:7px 0;border-bottom:1px solid var(--bd)}
+footer{text-align:center;color:var(--mut);font-size:.75rem;padding:20px 8px;line-height:1.6}
+.wide{grid-column:1/-1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>🎭 Kalkulator Pajak Hiburan (PBJT)</h1>
+<div style="font-weight:600;margin-top:4px">--- UP3D Wilayah Kecamatan Penjaringan ---</div>
+<p>PBJT Jasa Kesenian &amp; Hiburan · Provinsi DKI Jakarta</p>
+</header>
+
+<div class="grid">
+<section class="card">
+<h2>⚙️ Data Transaksi</h2>
+<label style="margin-top:0">Jenis Hiburan / Kesenian</label>
+<select id="jenis">
+<option value="bioskop">Tontonan Film / Bioskop</option>
+<option value="pagelaran">Pagelaran Kesenian, Musik, Tari, Busana</option>
+<option value="kontes">Kontes Kecantikan / Binaraga</option>
+<option value="pameran">Pameran</option>
+<option value="sirkus">Pertunjukan Sirkus, Akrobat, Sulap</option>
+<option value="pacuan">Pacuan Kuda / Perlombaan Kendaraan</option>
+<option value="ketangkasan">Permainan Ketangkasan</option>
+<option value="olahraga">Olahraga Permainan / Kebugaran</option>
+<option value="wahana">Rekreasi Wahana (Air, Edukasi, Budaya, dll)</option>
+<option value="pijat">Panti Pijat / Pijat Refleksi</option>
+<option value="khusus">Diskotek, Karaoke, Kelab Malam, Bar, Spa</option>
+<option value="keliling">Hiburan Keliling (Sirkus, Pasar Malam, Komedi Putar)</option>
+</select>
+<div class="hint" id="tarifInfo"></div>
+
+<div class="tabs">
+<button class="tab on" data-m="normal">Tagihan</button>
+<button class="tab" data-m="voucher">Voucher</button>
+<button class="tab" data-m="termasuk">Sudah Termasuk Pajak</button>
+</div>
+
+<div id="mNormal">
+<label>Total Tagihan (Rp)</label>
+<input type="text" inputmode="numeric" class="rp" id="bill" value="0">
+<label>Diskon (Rp)</label>
+<input type="text" inputmode="numeric" class="rp" id="disc" value="0">
+<div class="hint">Total tagihan sebelum pajak. Diskon mengurangi DPP.</div>
+</div>
+
+<div id="mVoucher" class="hide">
+<label>Jenis Voucher</label>
+<select id="vType"><option value="nominal">Voucher / gift card bernilai nominal</option><option value="non">Tanpa nilai nominal (tukar tiket)</option></select>
+<label id="vLbl">Nilai Nominal Voucher (Rp)</label>
+<input type="text" inputmode="numeric" class="rp" id="vVal" value="0">
+<div class="hint" id="vHint">DPP = nilai nominal voucher / gift card.</div>
+</div>
+
+<div id="mTermasuk" class="hide">
+<label>Total Dibayar, Sudah Termasuk Pajak (Rp)</label>
+<input type="text" inputmode="numeric" class="rp" id="tot" value="0">
+<div class="hint">DPP = Total ÷ (1 + tarif); pajak dihitung mundur.</div>
+</div>
+
+<div class="sub">Keringanan &amp; Pembebasan</div>
+<div class="chk"><input type="checkbox" id="cFilm"><label for="cFilm">🎬 Film nasional — keringanan 50%</label></div>
+<div class="chk"><input type="checkbox" id="cSeni"><label for="cSeni">🎨 Pagelaran seni nasional — pengurangan 50%</label></div>
+<div class="chk"><input type="checkbox" id="cWahana"><label for="cWahana">🎓 Wahana ekologi/pendidikan/budaya — pengurangan 50%</label></div>
+<div class="chk"><input type="checkbox" id="cSosial"><label for="cSosial">❤️ Kegiatan sosial kemanusiaan — pengurangan 50%</label></div>
+<div class="chk"><input type="checkbox" id="cFree"><label for="cFree">🚫 Pembebasan penuh (panti pijat tunanetra, pentas sekolah, hiburan pemerintah, hiburan keliling)</label></div>
+
+<button class="btn" id="hit">🧮 Hitung PBJT</button>
+<button class="btn alt" id="save">💾 Simpan ke Riwayat</button>
+<button class="btn alt" id="reset">↺ Reset</button>
+</section>
+
+<section class="card">
+<h2>📊 Hasil Perhitungan</h2>
+<div id="resEmpty" class="note" style="text-align:center;padding:30px 10px">🧮<br>Isi data transaksi, lalu tekan <b>Hitung PBJT</b> untuk menampilkan rincian perhitungan.</div>
+<div id="resBox" class="hide">
+<div id="jn" class="jn"></div>
+<div id="out"></div>
+<button class="btn" id="pdf">📄 Simpan PDF</button>
+<button class="btn alt" id="copy">📋 Salin Ringkasan</button>
+<div class="note" id="info"></div>
+</div>
+</section>
+
+<section class="card wide">
+<h2>🕘 Riwayat Perhitungan</h2>
+<div id="hist"></div>
+<button class="btn alt" id="clr" style="max-width:220px">Hapus Riwayat</button>
+</section>
+</div>
+
+<footer>
+Tarif PBJT: 10% (umum) · 40% (diskotek, karaoke, kelab malam, bar, spa). Ketentuan keringanan dan pembebasan mengikuti simulator asal; pastikan keberlakuannya ke Bapenda.<br>
+Alat bantu hitung/edukasi, bukan pengganti ketentuan resmi atau konsultasi dengan Bapenda DKI Jakarta.
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const pn=v=>parseFloat(String(v).replace(/\./g,''))||0;
+const fmt=n=>String(Math.round(Math.abs(n||0))).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const rp=n=>'Rp '+fmt(n);
+const J={
+ bioskop:{n:'Tontonan Film / Bioskop',t:.10,film:1},
+ pagelaran:{n:'Pagelaran Kesenian/Musik/Tari/Busana',t:.10,seni:1},
+ kontes:{n:'Kontes Kecantikan / Binaraga',t:.10},
+ pameran:{n:'Pameran',t:.10},
+ sirkus:{n:'Pertunjukan Sirkus/Akrobat/Sulap',t:.10},
+ pacuan:{n:'Pacuan Kuda / Perlombaan Kendaraan',t:.10},
+ ketangkasan:{n:'Permainan Ketangkasan',t:.10},
+ olahraga:{n:'Olahraga Permainan / Kebugaran',t:.10},
+ wahana:{n:'Rekreasi Wahana',t:.10,wahana:1},
+ pijat:{n:'Panti Pijat / Pijat Refleksi',t:.10,free:1},
+ khusus:{n:'Diskotek/Karaoke/Kelab Malam/Bar/Spa',t:.40},
+ keliling:{n:'Hiburan Keliling (Sirkus/Pasar Malam)',t:.10,free:1}
+};
+let mode='normal', last=null;
+
+function onJenis(){
+  const c=J[$('jenis').value];
+  $('tarifInfo').textContent='Tarif '+Math.round(c.t*100)+'%'+(c.t>=.4?' (hiburan khusus)':' (tarif umum)');
+  [['cFilm','film'],['cSeni','seni'],['cWahana','wahana'],['cFree','free']].forEach(([id,k])=>{
+    $(id).disabled=!c[k]; if(!c[k]) $(id).checked=false;
+  });
+}
+$('jenis').onchange=()=>{onJenis();calc()};
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  mode=b.dataset.m;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  $('mNormal').classList.toggle('hide',mode!=='normal');
+  $('mVoucher').classList.toggle('hide',mode!=='voucher');
+  $('mTermasuk').classList.toggle('hide',mode!=='termasuk');
+  calc();
+});
+$('vType').onchange=()=>{
+  const n=$('vType').value==='nominal';
+  $('vLbl').textContent=n?'Nilai Nominal Voucher (Rp)':'Harga Jual Normal Tiket Sejenis (Rp)';
+  $('vHint').textContent=n?'DPP = nilai nominal voucher / gift card.':'DPP = harga jual normal tiket sejenis di wilayah DKI Jakarta.';
+  calc();
+};
+
+function calc(){
+  const k=$('jenis').value, c=J[k], tarif=c.t, pct=Math.round(tarif*100);
+  const rows=[], info=[]; let dpp=0;
+  if(mode==='normal'){
+    const sub=pn($('bill').value), d=pn($('disc').value);
+    dpp=Math.max(0,sub-d);
+    rows.push(['Total Tagihan',sub,'']);
+    if(d){rows.push(['Diskon',-d,'m']);info.push('Diskon mengurangi DPP; pajak dihitung dari harga bersih.')}
+  } else if(mode==='voucher'){
+    dpp=pn($('vVal').value);
+    const n=$('vType').value==='nominal';
+    rows.push([n?'Nilai Nominal Voucher / Gift Card':'Harga Jual Normal Tiket Sejenis',dpp,'']);
+    info.push(n?'Voucher/gift card bernominal: DPP = nilai nominal kartu.':'Voucher tanpa nominal: DPP = harga jual normal tiket sejenis di wilayah DKI.');
+  } else {
+    const b=pn($('tot').value); dpp=b/(1+tarif);
+    rows.push(['Total Dibayar (termasuk pajak)',b,'']);
+    info.push('Harga dianggap sudah memuat pajak, sehingga DPP = total ÷ '+(1+tarif).toFixed(2).replace('.',',')+'.');
+  }
+  rows.push(['Dasar Pengenaan Pajak (DPP)',dpp,'t']);
+  const pjk=dpp*tarif;
+  let kp=0; const why=[];
+  if($('cFree').checked){kp=100;why.push('pembebasan penuh')}
+  else{
+    if($('cFilm').checked){kp+=50;why.push('film nasional')}
+    if($('cSeni').checked){kp+=50;why.push('seni nasional')}
+    if($('cWahana').checked){kp+=50;why.push('wahana edukasi/budaya')}
+    if($('cSosial').checked){kp+=50;why.push('kegiatan sosial kemanusiaan')}
+    kp=Math.min(100,kp);
+  }
+  const kv=pjk*kp/100, pa=pjk-kv;
+  rows.push(['PBJT '+pct+'%',pjk,'p']);
+  if(kv){rows.push(['Keringanan ('+kp+'%)',-kv,'m']);info.push('Keringanan/pembebasan: '+why.join(', ')+'.')}
+  rows.push(['PBJT yang Harus Disetorkan',pa,'t']);
+  const total=dpp+pa;
+  rows.push(['Total Dibayar Konsumen',total,'t']);
+  if(k==='khusus') info.push('Diskotek, karaoke, kelab malam, bar, dan spa dikenakan tarif 40%.');
+  if(k==='pijat'&&!kv) info.push('Panti pijat/refleksi dikenakan tarif umum 10%.');
+  $('jn').textContent=c.n+'  ·  tarif '+pct+'%';
+  $('out').innerHTML=rows.map(r=>`<div class="r ${r[2]}"><span>${r[0]}</span><b>${r[1]<0?'- ':''}${rp(r[1])}</b></div>`).join('')
+   +`<div class="big"><b>${rp(pa)}</b><span>PBJT Jasa Kesenian &amp; Hiburan</span></div>`;
+  $('info').innerHTML=info.map(i=>'💡 '+i).join('<br>');
+  last={t:new Date().toLocaleString('id-ID'),m:mode,nama:c.n,pct,dpp,pa,total,rows};
+}
+
+function loadHist(){try{return JSON.parse(localStorage.getItem('pbjt_hib_h')||'[]')}catch(e){return[]}}
+function saveHist(h){try{localStorage.setItem('pbjt_hib_h',JSON.stringify(h))}catch(e){}}
+function renderHist(){
+  const h=loadHist();
+  $('hist').innerHTML=h.length?h.map(x=>`<div class="h"><span>${x.t}<br><small style="color:var(--mut)">${x.nama} · DPP ${rp(x.dpp)}</small></span><b>${rp(x.pa)}</b></div>`).join(''):'<div class="hint">Belum ada riwayat tersimpan di perangkat ini.</div>';
+}
+$('save').onclick=()=>{calc();const h=loadHist();h.unshift(last);saveHist(h.slice(0,10));renderHist()};
+$('clr').onclick=()=>{saveHist([]);renderHist()};
+$('copy').onclick=async()=>{
+  const s=`Perhitungan PBJT ${last.nama} DKI Jakarta (${last.t})\nDPP: ${rp(last.dpp)}\nPBJT disetorkan: ${rp(last.pa)}\nTotal dibayar: ${rp(last.total)}`;
+  try{await navigator.clipboard.writeText(s);$('copy').textContent='✓ Tersalin'}catch(e){$('copy').textContent='Gagal menyalin'}
+  setTimeout(()=>$('copy').textContent='📋 Salin Ringkasan',1500);
+};
+$('hit').onclick=()=>{calc();$('resEmpty').classList.add('hide');$('resBox').classList.remove('hide');$('resBox').scrollIntoView({behavior:'smooth',block:'start'})};
+$('reset').onclick=()=>{
+  ['bill','disc','vVal','tot'].forEach(i=>$(i).value='0');
+  ['cFilm','cSeni','cWahana','cSosial','cFree'].forEach(i=>$(i).checked=false);
+  calc();$('resBox').classList.add('hide');$('resEmpty').classList.remove('hide');
+};
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',calc));
+document.querySelectorAll('input[type=checkbox]').forEach(i=>i.addEventListener('change',calc));
+
+document.addEventListener('focusin',e=>{const t=e.target;if(t.classList&&t.classList.contains('rp')&&t.value==='0')setTimeout(()=>{try{t.select()}catch(_){}},0)});
+document.addEventListener('input',e=>{
+  const t=e.target; if(!t.classList||!t.classList.contains('rp')) return;
+  const before=t.value.slice(0,t.selectionStart||0).replace(/\D/g,'').length;
+  const dg=t.value.replace(/\D/g,'').replace(/^0+(?=\d)/,'')||'0';
+  t.value=dg.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  let c=0,i=0; while(i<t.value.length&&c<before){ if(/\d/.test(t.value[i])) c++; i++; }
+  try{t.setSelectionRange(i,i)}catch(_){}
+});
+
+const safe=s=>String(s).replace(/[^\x20-\xff]/g,'');
+async function makePdf(){
+  const Jp=window.jspdf&&window.jspdf.jsPDF; if(!Jp) return;
+  let d=null; try{d=window.claude&&await claude.use('downloads')}catch(e){}
+  calc();
+  const doc=new Jp({unit:'mm',format:'a4'}); const L=20,R=190,R2=R-34; let y=24;
+  const get=re=>last.rows.find(r=>re.test(r[0]));
+  const txt=(t,x,o)=>doc.text(safe(t),x,y,o);
+  const B=()=>doc.setFont('helvetica','bold'), N=()=>doc.setFont('helvetica','normal');
+  const ln=x=>{const yy=y-6.2;doc.setDrawColor(0);doc.setLineWidth(.35);doc.line(x,yy,R,yy)};
+  const row=(a,v,b)=>{b?B():N();txt(a,L);txt(fmt(v),R,{align:'right'});y+=8.6};
+  doc.setFontSize(15);B();txt('Perhitungan PBJT Jasa Kesenian & Hiburan',L);y+=6;
+  doc.setFontSize(10);N();txt('Provinsi DKI Jakarta  |  '+last.t,L);y+=5;
+  txt('Jenis: '+last.nama+'  |  Tarif '+last.pct+'%',L);y+=14;
+  doc.setFontSize(13);
+  const f=last.rows[0], dk=get(/^Diskon/), dp=get(/^Dasar/), pj=get(/^PBJT \d/), kr=get(/^Keringanan/);
+  row(f[0],f[1]);
+  if(dk) row('Diskon',dk[1]);
+  ln(R2); row(dp[0],dp[1]);
+  B();txt('PBJT yang harus dibayar',L);txt(last.pct+'%  x',L+80);txt(fmt(dp[1]),R-43,{align:'right'});txt(fmt(pj[1]),R,{align:'right'});y+=8.6;
+  if(kr) row(kr[0],kr[1]);
+  ln(R2); row('Total dibayar konsumen',last.total);
+  y+=5; ln(L); row('PBJT yang harus disetorkan',last.pa,true);
+  y+=6; doc.setFontSize(9);N();
+  doc.splitTextToSize('Hasil alat bantu hitung/edukasi, bukan pengganti ketentuan resmi Bapenda DKI Jakarta.',R-L).forEach(t=>{txt(t,L);y+=4});
+  if(d){try{await d.save({filename:'perhitungan-pbjt-hiburan.pdf',data:doc.output('arraybuffer')})}catch(e){}}
+  else doc.save('perhitungan-pbjt-hiburan.pdf');
+}
+$('pdf').onclick=makePdf;
+
+onJenis();calc();renderHist();
+</script>
+</body>
+</html>

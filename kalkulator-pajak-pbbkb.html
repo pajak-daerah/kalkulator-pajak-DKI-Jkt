@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator PBBKB DKI Jakarta — BBM & Alat Berat</title>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background: #eef2f7; margin: 0; padding: 20px; color: #1a2b4a; }
+  .container { max-width: 1080px; margin: auto; background: #fff; border-radius: 12px;
+               box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden; }
+  header { background: linear-gradient(135deg, #bf360c, #ff7043); color: #fff; padding: 22px 26px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .unit { margin-top: 6px; font-size: 14px; font-weight: 600; letter-spacing: .5px; }
+  header p { margin: 6px 0 0; font-size: 13px; opacity: .95; }
+  .content { padding: 24px 26px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  input, select { width: 100%; padding: 10px; border: 1px solid #c3cfe0; border-radius: 8px;
+                  font-size: 14px; background: #fbfdff; }
+  input:focus, select:focus { outline: none; border-color: #ff7043; box-shadow: 0 0 0 3px rgba(255,112,67,.18); }
+  .full { grid-column: 1 / -1; }
+  .hint { font-size: 11px; color: #607d8b; margin-top: 4px; }
+  .section-title { font-size: 14px; font-weight: 700; color: #bf360c; margin: 18px 0 8px;
+                   border-bottom: 2px solid #ffccbc; padding-bottom: 4px; }
+  .buttons { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+  button { padding: 11px 22px; border: none; border-radius: 8px; font-size: 14px;
+           font-weight: 600; cursor: pointer; transition: .2s; }
+  .btn-hitung { background: #ff7043; color: #fff; }
+  .btn-hitung:hover { background: #bf360c; }
+  .btn-simpan { background: #2e7d32; color: #fff; }
+  .btn-simpan:hover { background: #1b5e20; }
+  .btn-cetak  { background: #ef6c00; color: #fff; }
+  .btn-cetak:hover { background: #e65100; }
+  .btn-reset  { background: #eceff1; color: #455a64; }
+  .btn-reset:hover { background: #cfd8dc; }
+  .result { margin-top: 24px; border: 1px solid #c3cfe0; border-radius: 10px; overflow: hidden; display: none; }
+  .result.show { display: block; }
+  .result-head { background: #fbe9e7; padding: 12px 18px; font-weight: 700; color: #bf360c; }
+  .result-body { padding: 18px; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #dde5ee; font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row.total { font-size: 17px; font-weight: 700; color: #bf360c; border-top: 2px solid #ff7043; margin-top: 6px; padding-top: 12px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-objek { background: #c8e6c9; color: #1b5e20; }
+  .badge-bebas { background: #ffcdd2; color: #b71c1c; }
+  .saved-list { margin-top: 26px; }
+  .saved-list h3 { font-size: 15px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid #e0e7ef; text-align: left; }
+  th { background: #f5f8fc; font-weight: 700; color: #37474f; }
+  .empty { color: #90a4ae; font-style: italic; font-size: 13px; }
+  .note { background: #fff8e1; border-left: 4px solid #ffb300; padding: 12px 16px;
+          font-size: 12px; border-radius: 6px; margin-top: 20px; line-height: 1.6; }
+  .calc-box { background: #fff3e0; border: 1px dashed #ffb74d; border-radius: 8px;
+              padding: 10px 14px; font-size: 12px; margin-top: 8px; color: #e65100; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    header, .buttons, .saved-list, .note, .input-section { display: none !important; }
+    .container { box-shadow: none; }
+    .result { display: block !important; border: 2px solid #000; }
+    .result-head { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; }
+  }
+
+  header { position: relative; }
+  .back { position:absolute; right:22px; top:22px; color:#fff; font-size:12px; text-decoration:none;
+          background:rgba(255,255,255,.2); padding:6px 12px; border-radius:20px; }
+  .back:hover { background:rgba(255,255,255,.32); }
+  .stale { display:none; background:#fff3e0; border-left:4px solid #ef6c00; padding:10px 14px;
+           border-radius:6px; font-size:12px; margin-top:16px; }
+  .stale.show { display:block; }
+  .result.show { animation: pop .45s ease; }
+  @keyframes pop { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+  .hero { background: linear-gradient(135deg,#bf360c,#ff7043); color:#fff; padding:22px; text-align:center; }
+  .hero small { opacity:.9; letter-spacing:.8px; font-size:11px; }
+  .hero .big { font-size:34px; font-weight:700; margin:6px 0 4px; }
+  .hero .sub { font-size:13px; opacity:.95; margin-bottom:10px; }
+  .chips { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .chip { flex:1; min-width:150px; background:#fff3e0; border:1px solid #ffe0b2; border-radius:10px; padding:10px 14px; }
+  .chip small { display:block; color:#8d6e63; font-size:11px; }
+  .chip b { font-size:16px; color:#bf360c; }
+  .chip.green { background:#e8f5e9; border-color:#c8e6c9; } .chip.green b { color:#2e7d32; }
+  .bars { margin:4px 0 14px; }
+  .bar-row { display:grid; grid-template-columns:190px 1fr 140px; gap:10px; align-items:center; font-size:12px; margin:9px 0; }
+  .bar-row b { text-align:right; }
+  .bar-track { background:#fbe9e7; border-radius:20px; height:14px; overflow:hidden; }
+  .bar-fill { height:100%; width:0; border-radius:20px; transition: width .9s cubic-bezier(.2,.8,.2,1); }
+  details.steps { margin-top:12px; background:#fff3e0; border-radius:8px; padding:10px 14px; font-size:13px; }
+  details.steps summary { cursor:pointer; font-weight:600; color:#bf360c; }
+  details.steps ol { margin:10px 0 0 18px; padding:0; line-height:1.9; }
+  .toast { position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(30px); background:#263238;
+           color:#fff; padding:12px 20px; border-radius:30px; font-size:13px; opacity:0; pointer-events:none;
+           transition:.3s; z-index:99; max-width:90%; text-align:center; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.err { background:#c62828; }
+  .btn-pdf { padding:5px 10px; font-size:12px; background:#fbe9e7; color:#bf360c; }
+  .btn-pdf:hover { background:#ffccbc; }
+  .input-err { border-color:#e53935 !important; box-shadow:0 0 0 3px rgba(229,57,53,.15) !important; }
+  .table-wrap { overflow-x:auto; }
+  @media (max-width: 720px) { .bar-row { grid-template-columns:1fr; } .bar-row b { text-align:left; } .back { position:static; display:inline-block; margin-top:10px; } }
+  @media print { .stale, .toast, .back, .btn-pdf { display:none !important; }
+                 .hero { background:#eee !important; color:#000 !important; -webkit-print-color-adjust:exact; } }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <a class="back" href="index.html">← Menu Utama</a>
+    <h1>Kalkulator PBBKB — BBM &amp; Alat Berat DKI Jakarta</h1>
+    <div class="unit">--- UP3D Wilayah Kecamatan Penjaringan ---</div>
+    <p>Perda DKI No. 1 Tahun 2024 · Keputusan Gubernur No. 542 Tahun 2025 · Tarif Normal 10% · Berlaku s.d. 2026</p>
+  </header>
+
+  <div class="content">
+    <div class="input-section">
+
+      <div class="section-title">1. Skenario Contoh (opsional)</div>
+      <div class="grid">
+        <div class="full">
+          <label for="skenario">Pilih Skenario (isi otomatis)</label>
+          <select id="skenario" onchange="isiSkenario()">
+            <option value="">-- Pilih Skenario Contoh --</option>
+            <option value="1">1. Pribadi — Pertalite (diskon 50%)</option>
+            <option value="2">2. Pribadi — Pertamax (diskon 50%)</option>
+            <option value="3">3. Umum (Angkot) — Solar (diskon 50%)</option>
+            <option value="4">4. Umum (Bus) — Solar (diskon 50%)</option>
+            <option value="5">5. Pribadi — BBG / Gas (diskon 50%)</option>
+            <option value="6">6. Alat Berat — Solar Industri (diskon 50%)</option>
+            <option value="7">7. Pertahanan (Tank) — Solar (diskon 80%)</option>
+            <option value="8">8. Ambulans — Pertamax (diskon 80%)</option>
+            <option value="9">9. Kapal Rumah Sakit — Solar (diskon 80%)</option>
+            <option value="10">10. Pembelian di Luar Jakarta (tidak dikenakan)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title">2. Data Penyerahan BBKB</div>
+      <div class="grid">
+        <div>
+          <label for="jenisBBKB">Jenis / Macam BBKB</label>
+          <select id="jenisBBKB" onchange="hitungLive()">
+            <option value="Pertalite">Pertalite (Cair)</option>
+            <option value="Pertamax">Pertamax / Pertamax Turbo (Cair)</option>
+            <option value="Solar">Solar / Biosolar (Cair)</option>
+            <option value="Premium">Premium (Cair)</option>
+            <option value="BBG">BBG / Gas (Gas)</option>
+            <option value="Solar Industri">Solar Industri / Alat Berat (Cair)</option>
+            <option value="MFO">MFO / Marine Fuel (Cair)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="wujud">Wujud BBKB</label>
+          <input type="text" id="wujud" value="Cair" readonly>
+          <div class="hint">Otomatis mengikuti jenis BBKB (cair/gas).</div>
+        </div>
+
+        <div>
+          <label for="kategori">Kategori Pengguna / Konsumen</label>
+          <select id="kategori" onchange="hitungLive()">
+            <option value="Pribadi">Kendaraan Pribadi</option>
+            <option value="Umum">Kendaraan Umum</option>
+            <option value="Pertahanan">Pertahanan Keamanan (Tank, Panser, Ambulans, Kapal RS)</option>
+            <option value="Alat Berat">Alat Berat</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="lokasi">Lokasi Penyerahan</label>
+          <select id="lokasi" onchange="hitungLive()">
+            <option value="DKI Jakarta">Di Wilayah DKI Jakarta</option>
+            <option value="Luar DKI">Di Luar DKI Jakarta</option>
+          </select>
+          <div class="hint">PBBKB DKI hanya untuk penyerahan di wilayah DKI.</div>
+        </div>
+
+        <div>
+          <label for="penyedia">Penyedia / Produsen / Importir</label>
+          <select id="penyedia" onchange="hitungLive()">
+            <option value="Pertamina">Pertamina</option>
+            <option value="Shell">Shell</option>
+            <option value="BP">BP</option>
+            <option value="Vivo">Vivo</option>
+            <option value="AKR">AKR Corporindo</option>
+            <option value="Importir Lain">Importir Lain</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="nilaiJual">Nilai Jual BBKB sebelum PPN (Rp/liter)</label>
+          <input type="number" id="nilaiJual" min="0" value="10000" oninput="hitungLive()">
+          <div class="hint">Dasar pengenaan = nilai jual sebelum PPN.</div>
+        </div>
+
+        <div>
+          <label for="volume">Volume Penyerahan (liter)</label>
+          <input type="number" id="volume" min="0" value="1" oninput="hitungLive()">
+          <div class="hint">Untuk menghitung total PBBKB transaksi.</div>
+        </div>
+
+        <div>
+          <label for="tarifNormal">Tarif Normal PBBKB (%)</label>
+          <input type="number" id="tarifNormal" min="0" max="10" value="10" oninput="hitungLive()">
+          <div class="hint">Sesuai Perda DKI No. 1/2024: 10%.</div>
+        </div>
+      </div>
+      <div class="calc-box" id="calcBox">
+        PBBKB = Nilai Jual (sebelum PPN) × Tarif Efektif &nbsp;|&nbsp; Tarif Efektif = Tarif Normal × (100% − Pengurangan)
+      </div>
+
+      <div class="section-title">3. Pengurangan / Diskon (Keputusan Gubernur No. 542/2025)</div>
+      <div class="grid">
+        <div>
+          <label for="pengurangan">Pengurangan (%)</label>
+          <input type="number" id="pengurangan" min="0" max="100" value="50" oninput="hitungLive()">
+          <div class="hint">50% pribadi/umum · 80% pertahanan keamanan · 0% tanpa pengurangan.</div>
+        </div>
+        <div>
+          <label for="diskonTambahan">Diskon / Potongan Tambahan (Rp/liter)</label>
+          <input type="number" id="diskonTambahan" min="0" value="0" oninput="hitungLive()">
+          <div class="hint">Opsional, mengurangi PBBKB per liter (jika ada kebijakan).</div>
+        </div>
+        <div class="full">
+          <label for="keterangan">Keterangan / No. Penyerahan (opsional)</label>
+          <input type="text" id="keterangan" placeholder="Contoh: DO #PBBKB-2026-001 / SPBU 34-123-45">
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn-hitung" onclick="hitung()">🧮 Hitung</button>
+        <button class="btn-simpan" onclick="simpan()">💾 Simpan (PDF)</button>
+        <button class="btn-cetak" onclick="cetak()">🖨️ Cetak</button>
+        <button class="btn-reset" onclick="resetForm()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- HASIL -->
+    <div class="stale" id="stale">⚠️ Data input berubah. Klik <strong>Hitung</strong> untuk memperbarui hasil sebelum menyimpan.</div>
+    <div class="result" id="result">
+      <div class="result-head">Hasil Perhitungan PBBKB</div>
+      <div class="hero">
+        <small>TOTAL PBBKB TERUTANG</small>
+        <div class="big" id="rTotal">Rp 0</div>
+        <div class="sub" id="rPajakLiter">-</div>
+        <span id="rStatus"></span>
+      </div>
+      <div class="result-body">
+        <div class="chips" id="chips"></div>
+        <div class="bars" id="bars"></div>
+        <div class="row"><span>Jenis / Macam BBKB</span><span id="rJenis">-</span></div>
+        <div class="row"><span>Wujud</span><span id="rWujud">-</span></div>
+        <div class="row"><span>Kategori Pengguna / Konsumen</span><span id="rKategori">-</span></div>
+        <div class="row"><span>Lokasi Penyerahan</span><span id="rLokasi">-</span></div>
+        <div class="row"><span>Penyedia / Produsen / Importir</span><span id="rPenyedia">-</span></div>
+        <div class="row"><span>Nilai Jual sebelum PPN</span><span id="rNilai">-</span></div>
+        <div class="row"><span>Tarif Normal</span><span id="rTarifNormal">-</span></div>
+        <div class="row"><span>Pengurangan</span><span id="rPengurangan">-</span></div>
+        <div class="row"><span>Tarif Efektif</span><span id="rTarifEfektif">-</span></div>
+        <div class="row"><span>Diskon / Potongan Tambahan</span><span id="rDiskonTambahan">-</span></div>
+        <div class="row"><span>Volume Penyerahan</span><span id="rVolume">-</span></div>
+        <div class="row"><span>Keterangan</span><span id="rKet">-</span></div>
+        <div class="row"><span>Waktu Hitung</span><span id="rWaktu">-</span></div>
+        <details class="steps"><summary>Lihat langkah perhitungan</summary><ol id="rSteps"></ol></details>
+      </div>
+    </div>
+
+    <!-- RIWAYAT -->
+    <div class="saved-list">
+      <h3>📋 Riwayat Perhitungan Tersimpan</h3>
+      <div class="table-wrap"><table id="tabelRiwayat">
+        <thead>
+          <tr>
+            <th>No</th><th>BBKB</th><th>Kategori</th><th>Nilai Jual</th><th>Tarif Efektif</th>
+            <th>PBBKB/L</th><th>Volume</th><th>Total</th><th>Waktu</th><th>PDF</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyRiwayat">
+          <tr><td colspan="10" class="empty">Belum ada data tersimpan.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="buttons" style="margin-top:12px;">
+        <button class="btn-reset" onclick="hapusRiwayat()">🗑️ Hapus Riwayat</button>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Catatan:</strong> PBBKB = Nilai Jual BBKB <em>sebelum PPN</em> × Tarif Efektif.
+      Tarif normal 10% (Perda DKI No. 1/2024). Pengurangan sesuai Keputusan Gubernur No. 542/2025:
+      <strong>50%</strong> untuk kendaraan pribadi &amp; umum (tarif efektif 5%), <strong>80%</strong> untuk
+      kendaraan pertahanan keamanan (tarif efektif 2%). PBBKB hanya dikenakan atas penyerahan di wilayah
+      DKI Jakarta. Wajib Pajak adalah penyedia/produsen/importir (Pertamina, Shell, dll.) yang memungut
+      dari konsumen. BBKB mencakup bahan bakar <em>cair maupun gas</em> untuk kendaraan bermotor dan alat berat.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+/* ===================== DATA SKENARIO ===================== */
+const SKENARIO = {
+  1:  { jenisBBKB:"Pertalite", kategori:"Pribadi", lokasi:"DKI Jakarta", penyedia:"Pertamina", nilaiJual:10000, volume:1, tarifNormal:10, pengurangan:50, diskonTambahan:0, ket:"Pribadi - Pertalite, diskon 50%" },
+  2:  { jenisBBKB:"Pertamax", kategori:"Pribadi", lokasi:"DKI Jakarta", penyedia:"Shell", nilaiJual:12000, volume:1, tarifNormal:10, pengurangan:50, diskonTambahan:0, ket:"Pribadi - Pertamax, diskon 50%" },
+  3:  { jenisBBKB:"Solar", kategori:"Umum", lokasi:"DKI Jakarta", penyedia:"Pertamina", nilaiJual:8000, volume:1, tarifNormal:10, pengurangan:50, diskonTambahan:0, ket:"Angkot - Solar, diskon 50%" },
+  4:  { jenisBBKB:"Solar", kategori:"Umum", lokasi:"DKI Jakarta", penyedia:"Pertamina", nilaiJual:8000, volume:1, tarifNormal:10, pengurangan:50, diskonTambahan:0, ket:"Bus - Solar, diskon 50%" },
+  5:  { jenisBBKB:"BBG", kategori:"Pribadi", lokasi:"DKI Jakarta", penyedia:"Pertamina", nilaiJual:6000, volume:1, tarifNormal:10, pengurangan:50, diskonTambahan:0, ket:"Pribadi - BBG (gas), diskon 50%" },
+  6:  { jenisBBKB:"Solar Industri", kategori:"Alat Berat", lokasi:"DKI Jakarta", penyedia:"AKR", nilaiJual:15000, volume:1, tarifNormal:10, pengurangan:50, diskonTambahan:0, ket:"Alat berat - Solar industri, diskon 50%" },
+  7:  { jenisBBKB:"Solar", kategori:"Pertahanan", lokasi:"DKI Jakarta", penyedia:"Pertamina", nilaiJual:15000, volume:1, tarifNormal:10, pengurangan:80, diskonTambahan:0, ket:"Tank - Solar, diskon 80%" },
+  8:  { jenisBBKB:"Pertamax", kategori:"Pertahanan", lokasi:"DKI Jakarta", penyedia:"Pertamina", nilaiJual:12000, volume:1, tarifNormal:10, pengurangan:80, diskonTambahan:0, ket:"Ambulans - Pertamax, diskon 80%" },
+  9:  { jenisBBKB:"Solar", kategori:"Pertahanan", lokasi:"DKI Jakarta", penyedia:"Pertamina", nilaiJual:15000, volume:1, tarifNormal:10, pengurangan:80, diskonTambahan:0, ket:"Kapal RS - Solar, diskon 80%" },
+  10: { jenisBBKB:"Pertalite", kategori:"Pribadi", lokasi:"Luar DKI", penyedia:"Pertamina", nilaiJual:10000, volume:1, tarifNormal:10, pengurangan:0, diskonTambahan:0, ket:"Pembelian di luar Jakarta" }
+};
+
+// Pemetaan wujud berdasarkan jenis BBKB
+const WUJUD = {
+  "Pertalite": "Cair", "Pertamax": "Cair", "Solar": "Cair", "Premium": "Cair",
+  "BBG": "Gas", "Solar Industri": "Cair", "MFO": "Cair"
+};
+
+let hasilTerakhir = null;
+let riwayat = JSON.parse(localStorage.getItem('pbbkb_dki_riwayat') || '[]');
+
+/* ===================== UTIL ===================== */
+const rupiah = n => 'Rp ' + Number(n).toLocaleString('id-ID', {maximumFractionDigits: 2});
+const angka = n => Number(n).toLocaleString('id-ID', {maximumFractionDigits: 2});
+const num = id => parseFloat(document.getElementById(id).value) || 0;
+
+/* ===================== ISI SKENARIO ===================== */
+function isiSkenario() {
+  const kode = document.getElementById('skenario').value;
+  if (!kode) return;
+  const s = SKENARIO[kode];
+  document.getElementById('jenisBBKB').value = s.jenisBBKB;
+  document.getElementById('wujud').value = WUJUD[s.jenisBBKB] || 'Cair';
+  document.getElementById('kategori').value = s.kategori;
+  document.getElementById('lokasi').value = s.lokasi;
+  document.getElementById('penyedia').value = s.penyedia;
+  document.getElementById('nilaiJual').value = s.nilaiJual;
+  document.getElementById('volume').value = s.volume;
+  document.getElementById('tarifNormal').value = s.tarifNormal;
+  document.getElementById('pengurangan').value = s.pengurangan;
+  document.getElementById('diskonTambahan').value = s.diskonTambahan;
+  document.getElementById('keterangan').value = s.ket;
+  hitungLive();
+}
+
+/* ===================== UPDATE WUJUD ===================== */
+document.getElementById('jenisBBKB').addEventListener('change', function () {
+  document.getElementById('wujud').value = WUJUD[this.value] || 'Cair';
+  hitungLive();
+});
+
+/* ===================== UTIL TAMBAHAN ===================== */
+let toastTimer;
+function toast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = 'toast', 3200);
+}
+function countUp(el, to) {
+  const t0 = performance.now(), d = 900;
+  (function f(t) {
+    const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = rupiah(to * e);
+    if (p < 1) requestAnimationFrame(f);
+  })(t0);
+}
+
+/* ===================== INTI PERHITUNGAN ===================== */
+function ambilInput() {
+  return {
+    jenisBBKB: document.getElementById('jenisBBKB').value,
+    wujud: document.getElementById('wujud').value,
+    kategori: document.getElementById('kategori').value,
+    lokasi: document.getElementById('lokasi').value,
+    penyedia: document.getElementById('penyedia').value,
+    nilaiJual: num('nilaiJual'), volume: num('volume'), tarifNormal: num('tarifNormal'),
+    pengurangan: num('pengurangan'), diskonTambahan: num('diskonTambahan'),
+    keterangan: document.getElementById('keterangan').value.trim()
+  };
+}
+
+function hitungData(i) {
+  if (i.lokasi === 'Luar DKI') {
+    return { ...i, dikecualikan: true, tarifEfektif: 0, pajakNormalLiter: 0, pajakLiter: 0, total: 0,
+             totalNormal: 0, hemat: 0, status: 'Bukan Objek', alasan: 'Penyerahan di luar wilayah DKI Jakarta' };
+  }
+  const tarifEfektif = i.tarifNormal * (1 - i.pengurangan / 100);
+  const pajakNormalLiter = i.nilaiJual * i.tarifNormal / 100;
+  const pajakLiter = Math.max(0, i.nilaiJual * tarifEfektif / 100 - i.diskonTambahan);
+  const total = pajakLiter * i.volume;
+  const totalNormal = pajakNormalLiter * i.volume;
+  return { ...i, dikecualikan: false, tarifEfektif, pajakNormalLiter, pajakLiter, total, totalNormal,
+           hemat: Math.max(0, totalNormal - total), status: 'Objek PBBKB', alasan: '-' };
+}
+
+/* Pratinjau rumus saja; hasil resmi hanya lewat tombol Hitung */
+function hitungLive() {
+  const h = hitungData(ambilInput());
+  document.getElementById('calcBox').innerHTML = h.dikecualikan
+    ? 'Penyerahan di luar DKI Jakarta <strong>bukan objek</strong> PBBKB DKI.'
+    : 'Tarif Efektif = ' + h.tarifNormal + '% × (100% − ' + h.pengurangan + '%) = <strong>' + angka(h.tarifEfektif) +
+      '%</strong> &nbsp;|&nbsp; PBBKB/L = (' + rupiah(h.nilaiJual) + ' × ' + angka(h.tarifEfektif) + '%) − ' +
+      rupiah(h.diskonTambahan) + ' = <strong>' + rupiah(h.pajakLiter) + '</strong> &nbsp;|&nbsp; Total = ' +
+      rupiah(h.pajakLiter) + ' × ' + angka(h.volume) + ' L = <strong>' + rupiah(h.total) + '</strong>';
+  if (hasilTerakhir) document.getElementById('stale').classList.add('show');
+}
+
+function validasi(i) {
+  document.querySelectorAll('.input-err').forEach(e => e.classList.remove('input-err'));
+  if (i.lokasi === 'Luar DKI') return true;
+  const cek = [
+    [i.nilaiJual > 0, 'nilaiJual', 'Nilai jual harus lebih dari 0.'],
+    [i.volume > 0, 'volume', 'Volume penyerahan harus lebih dari 0.'],
+    [i.tarifNormal > 0 && i.tarifNormal <= 10, 'tarifNormal', 'Tarif normal harus antara 0 dan 10%.'],
+    [i.pengurangan >= 0 && i.pengurangan <= 100, 'pengurangan', 'Pengurangan harus antara 0 dan 100%.'],
+    [i.diskonTambahan >= 0, 'diskonTambahan', 'Diskon tambahan tidak boleh negatif.']
+  ];
+  for (const [ok, id, msg] of cek) {
+    if (!ok) { const el = document.getElementById(id); el.classList.add('input-err'); el.focus(); toast(msg, true); return false; }
+  }
+  return true;
+}
+
+function tampilkanHasil(h) {
+  document.getElementById('rStatus').innerHTML = h.dikecualikan
+    ? '<span class="badge badge-bebas">Bukan Objek</span>' : '<span class="badge badge-objek">Objek PBBKB</span>';
+  document.getElementById('rPajakLiter').textContent = 'PBBKB per liter: ' + rupiah(h.pajakLiter);
+  document.getElementById('rJenis').textContent = h.jenisBBKB;
+  document.getElementById('rWujud').textContent = h.wujud;
+  document.getElementById('rKategori').textContent = h.kategori;
+  document.getElementById('rLokasi').textContent = h.lokasi;
+  document.getElementById('rPenyedia').textContent = h.penyedia;
+  document.getElementById('rNilai').textContent = rupiah(h.nilaiJual) + ' /liter';
+  document.getElementById('rTarifNormal').textContent = h.tarifNormal + '%';
+  document.getElementById('rPengurangan').textContent = h.pengurangan + '%';
+  document.getElementById('rTarifEfektif').textContent = angka(h.tarifEfektif) + '%';
+  document.getElementById('rDiskonTambahan').textContent = rupiah(h.diskonTambahan) + ' /liter';
+  document.getElementById('rVolume').textContent = angka(h.volume) + ' liter';
+  document.getElementById('rKet').textContent = (h.keterangan || '-') + (h.dikecualikan ? ' | ' + h.alasan : '');
+  document.getElementById('rWaktu').textContent = new Date(h.waktu).toLocaleString('id-ID');
+
+  document.getElementById('rSteps').innerHTML = h.dikecualikan
+    ? '<li>' + h.alasan + ', sehingga PBBKB DKI = <strong>Rp 0</strong>.</li>'
+    : '<li>Tarif Efektif = Tarif Normal × (100% − Pengurangan) = ' + h.tarifNormal + '% × ' + (100 - h.pengurangan) + '% = <strong>' + angka(h.tarifEfektif) + '%</strong></li>' +
+      '<li>PBBKB per liter = (Nilai Jual × Tarif Efektif) − Diskon = (' + rupiah(h.nilaiJual) + ' × ' + angka(h.tarifEfektif) + '%) − ' + rupiah(h.diskonTambahan) + ' = <strong>' + rupiah(h.pajakLiter) + '</strong></li>' +
+      '<li>Total PBBKB = PBBKB per liter × Volume = ' + rupiah(h.pajakLiter) + ' × ' + angka(h.volume) + ' L = <strong>' + rupiah(h.total) + '</strong></li>';
+
+  document.getElementById('chips').innerHTML = h.dikecualikan ? '' :
+    '<div class="chip"><small>Tarif efektif</small><b>' + angka(h.tarifEfektif) + '%</b></div>' +
+    '<div class="chip"><small>PBBKB per liter</small><b>' + rupiah(h.pajakLiter) + '</b></div>' +
+    '<div class="chip green"><small>Penghematan dari pengurangan</small><b>' + rupiah(h.hemat) + '</b></div>';
+
+  const bars = document.getElementById('bars');
+  if (h.dikecualikan || h.totalNormal <= 0) { bars.innerHTML = ''; }
+  else {
+    const rows = [['PBBKB tanpa pengurangan', h.totalNormal, '#bf360c'], ['PBBKB terutang', h.total, '#ff7043'], ['Penghematan', h.hemat, '#43a047']];
+    bars.innerHTML = rows.map(r => '<div class="bar-row"><span>' + r[0] + '</span><div class="bar-track"><div class="bar-fill" data-w="' +
+      (r[1] / h.totalNormal * 100).toFixed(1) + '" style="background:' + r[2] + '"></div></div><b>' + rupiah(r[1]) + '</b></div>').join('');
+    setTimeout(() => bars.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w + '%'), 60);
+  }
+
+  const res = document.getElementById('result');
+  res.classList.remove('show'); void res.offsetWidth; res.classList.add('show');
+  countUp(document.getElementById('rTotal'), h.total);
+}
+
+/* ===================== TOMBOL ===================== */
+function hitung() {
+  const i = ambilInput();
+  if (!validasi(i)) return;
+  const w = new Date(), p = n => String(n).padStart(2, '0');
+  const h = hitungData(i);
+  h.waktu = w.toISOString();
+  h.nomor = 'PBBKB-' + w.getFullYear() + p(w.getMonth() + 1) + p(w.getDate()) + '-' + p(w.getHours()) + p(w.getMinutes()) + p(w.getSeconds());
+  hasilTerakhir = h;
+  tampilkanHasil(h);
+  hitungLive();
+  document.getElementById('stale').classList.remove('show');
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toast('Perhitungan selesai. Total PBBKB: ' + rupiah(h.total));
+}
+
+function simpan() {
+  if (!hasilTerakhir) { toast('Klik Hitung terlebih dahulu.', true); return; }
+  if (document.getElementById('stale').classList.contains('show')) { toast('Data berubah. Klik Hitung lagi sebelum menyimpan.', true); return; }
+  riwayat.push(hasilTerakhir);
+  localStorage.setItem('pbbkb_dki_riwayat', JSON.stringify(riwayat));
+  renderRiwayat();
+  buatPDF(hasilTerakhir);
+}
+
+function cetak() {
+  if (!hasilTerakhir) { toast('Klik Hitung terlebih dahulu sebelum mencetak.', true); return; }
+  window.print();
+}
+
+function resetForm() {
+  document.getElementById('skenario').value = '';
+  document.getElementById('jenisBBKB').value = 'Pertalite';
+  document.getElementById('wujud').value = 'Cair';
+  document.getElementById('kategori').value = 'Pribadi';
+  document.getElementById('lokasi').value = 'DKI Jakarta';
+  document.getElementById('penyedia').value = 'Pertamina';
+  document.getElementById('nilaiJual').value = 10000;
+  document.getElementById('volume').value = 1;
+  document.getElementById('tarifNormal').value = 10;
+  document.getElementById('pengurangan').value = 50;
+  document.getElementById('diskonTambahan').value = 0;
+  document.getElementById('keterangan').value = '';
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('stale').classList.remove('show');
+  document.querySelectorAll('.input-err').forEach(e => e.classList.remove('input-err'));
+  hasilTerakhir = null;
+  hitungLive();
+}
+
+/* ===================== PDF ===================== */
+function buatPDF(h) {
+  if (!(window.jspdf && window.jspdf.jsPDF)) {
+    toast('Pustaka PDF belum termuat (perlu internet). Membuka dialog cetak...', true);
+    setTimeout(() => window.print(), 700); return;
+  }
+  const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, M = 15, DK = [191, 54, 12], AC = [255, 112, 67], LT = [251, 233, 231];
+  const nomor = h.nomor || ('PBBKB-' + new Date(h.waktu).getTime());
+  const tgl = new Date(h.waktu).toLocaleString('id-ID');
+
+  doc.setFillColor(...DK); doc.rect(0, 0, W, 40, 'F');
+  doc.setFillColor(...AC); doc.rect(0, 40, W, 3, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text('PERHITUNGAN PBBKB', M, 17);
+  doc.setFontSize(10.5); doc.text('--- UP3D Wilayah Kecamatan Penjaringan ---', M, 24);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+  doc.text('Pajak Bahan Bakar Kendaraan Bermotor & Alat Berat', M, 30);
+  doc.text('Pemerintah Provinsi DKI Jakarta | Perda No. 1 Tahun 2024', M, 35);
+  doc.setFontSize(8.5); doc.text('No. Dokumen', W - M, 14, { align: 'right' });
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(nomor, W - M, 20, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.text('Tanggal Hitung', W - M, 28, { align: 'right' });
+  doc.setFont('helvetica', 'bold'); doc.text(tgl, W - M, 34, { align: 'right' });
+
+  doc.setFillColor(...LT); doc.setDrawColor(...DK); doc.setLineWidth(0.6);
+  doc.roundedRect(M, 50, W - 2 * M, 28, 3, 3, 'FD');
+  doc.setTextColor(...DK); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  doc.text('TOTAL PBBKB TERUTANG', M + 6, 59);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(23); doc.text(rupiah(h.total), M + 6, 72);
+  doc.setFillColor(...(h.dikecualikan ? [198, 40, 40] : [46, 125, 50]));
+  doc.roundedRect(W - M - 38, 56, 32, 9, 4, 4, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(9);
+  doc.text(h.dikecualikan ? 'BUKAN OBJEK' : 'OBJEK PBBKB', W - M - 22, 62, { align: 'center' });
+
+  const sec = (y, t) => {
+    doc.setTextColor(...DK); doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text(t, M, y);
+    doc.setDrawColor(255, 204, 188); doc.setLineWidth(0.5); doc.line(M, y + 1.5, W - M, y + 1.5);
+  };
+  const tbl = (startY, head, body, cols) => doc.autoTable({
+    startY, head: head ? [head] : undefined, body, theme: 'grid', margin: { left: M, right: M },
+    styles: { fontSize: 9, cellPadding: 2.2, textColor: [38, 50, 56], lineColor: [221, 229, 238] },
+    headStyles: { fillColor: DK, textColor: 255 }, alternateRowStyles: { fillColor: [255, 248, 245] },
+    columnStyles: cols
+  });
+
+  sec(90, 'A. Data Penyerahan BBKB');
+  tbl(94, null, [
+    ['Jenis / Macam BBKB', h.jenisBBKB + ' (' + h.wujud + ')'], ['Kategori Pengguna', h.kategori],
+    ['Lokasi Penyerahan', h.lokasi], ['Penyedia / Produsen / Importir', h.penyedia],
+    ['Nilai Jual sebelum PPN', rupiah(h.nilaiJual) + ' /liter'], ['Volume Penyerahan', angka(h.volume) + ' liter'],
+    ['Keterangan / No. Penyerahan', h.keterangan || '-']
+  ], { 0: { cellWidth: 62, fontStyle: 'bold', fillColor: LT } });
+
+  let y = doc.lastAutoTable.finalY + 9;
+  sec(y, 'B. Rincian Perhitungan');
+  tbl(y + 4, ['Komponen', 'Perhitungan', 'Nilai'], h.dikecualikan
+    ? [['PBBKB DKI', h.alasan, rupiah(0)]]
+    : [['Tarif Normal', 'Sesuai Perda DKI No. 1/2024', h.tarifNormal + '%'],
+       ['Pengurangan', 'Kepgub No. 542/2025', h.pengurangan + '%'],
+       ['Tarif Efektif', h.tarifNormal + '% × (100% - ' + h.pengurangan + '%)', angka(h.tarifEfektif) + '%'],
+       ['PBBKB per Liter', '(' + rupiah(h.nilaiJual) + ' × ' + angka(h.tarifEfektif) + '%) - ' + rupiah(h.diskonTambahan), rupiah(h.pajakLiter)],
+       ['Total PBBKB Terutang', rupiah(h.pajakLiter) + ' × ' + angka(h.volume) + ' L', rupiah(h.total)]],
+    { 2: { halign: 'right', fontStyle: 'bold' } });
+
+  y = doc.lastAutoTable.finalY + 9;
+  if (!h.dikecualikan && h.totalNormal > 0) {
+    if (y > 235) { doc.addPage(); y = 20; }
+    sec(y, 'C. Perbandingan dengan Tarif Normal');
+    [['Tanpa pengurangan', h.totalNormal, DK], ['PBBKB terutang', h.total, AC], ['Penghematan', h.hemat, [67, 160, 71]]].forEach((r, k) => {
+      const by = y + 9 + k * 9;
+      doc.setTextColor(55, 71, 79); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(r[0], M, by + 3.5);
+      doc.setFillColor(...LT); doc.roundedRect(M + 32, by, 85, 5, 2.5, 2.5, 'F');
+      doc.setFillColor(...r[2]); doc.roundedRect(M + 32, by, Math.max(2, 85 * r[1] / h.totalNormal), 5, 2.5, 2.5, 'F');
+      doc.setFont('helvetica', 'bold'); doc.text(rupiah(r[1]), W - M, by + 3.5, { align: 'right' });
+    });
+    y += 40;
+  }
+
+  if (y > 255) { doc.addPage(); y = 20; }
+  const cat = doc.splitTextToSize('Catatan: Dokumen ini merupakan simulasi perhitungan berdasarkan data yang diinput pengguna dan bukan ' +
+    'surat ketetapan pajak. PBBKB dihitung dari nilai jual BBKB sebelum PPN, hanya untuk penyerahan di wilayah DKI Jakarta. ' +
+    'Dasar: Perda DKI No. 1/2024 dan Keputusan Gubernur DKI No. 542/2025.', W - 2 * M - 8);
+  doc.setFillColor(255, 248, 225); doc.setDrawColor(255, 179, 0);
+  doc.roundedRect(M, y, W - 2 * M, cat.length * 4.2 + 6, 2, 2, 'FD');
+  doc.setTextColor(95, 75, 20); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text(cat, M + 4, y + 6);
+
+  const n = doc.getNumberOfPages();
+  for (let p = 1; p <= n; p++) {
+    doc.setPage(p); doc.setDrawColor(200); doc.setLineWidth(0.2); doc.line(M, 285, W - M, 285);
+    doc.setTextColor(120); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    doc.text('Kalkulator PBBKB - DKI Jakarta', M, 290);
+    doc.text('Halaman ' + p + ' / ' + n, W - M, 290, { align: 'right' });
+  }
+  doc.save('PBBKB_' + nomor + '.pdf');
+  toast('Tersimpan ke riwayat & PDF diunduh: PBBKB_' + nomor + '.pdf');
+}
+
+function unduhRiwayat(i) { buatPDF(riwayat[i]); }
+
+/* ===================== RIWAYAT ===================== */
+function renderRiwayat() {
+  const tbody = document.getElementById('tbodyRiwayat');
+  if (riwayat.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" class="empty">Belum ada data tersimpan.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = riwayat.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td><td>${r.jenisBBKB}</td><td>${r.kategori}</td><td>${rupiah(r.nilaiJual)}</td>
+      <td>${angka(r.tarifEfektif)}%</td><td>${rupiah(r.pajakLiter)}</td><td>${angka(r.volume)} L</td>
+      <td>${rupiah(r.total)}</td><td>${new Date(r.waktu).toLocaleString('id-ID')}</td>
+      <td><button class="btn-pdf" onclick="unduhRiwayat(${i})">⬇ PDF</button></td>
+    </tr>`).join('');
+}
+
+function hapusRiwayat() {
+  if (!confirm('Hapus semua riwayat perhitungan?')) return;
+  riwayat = [];
+  localStorage.removeItem('pbbkb_dki_riwayat');
+  renderRiwayat();
+}
+
+/* ===================== INIT ===================== */
+renderRiwayat();
+hitungLive();
+
+</script>
+</body>
+</html>

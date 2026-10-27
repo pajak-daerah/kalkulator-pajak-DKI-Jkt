@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Kalkulator Pajak</title>
+    <!-- Font Inter (cadangan: font bawaan perangkat) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: #f1f5f9;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        .card {
+            width: 100%;
+            max-width: 24rem;
+            padding: 32px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+        }
+        .logos { display: flex; justify-content: center; align-items: center; gap: 24px; margin-bottom: 24px; }
+        .logos img { height: 64px; width: auto; object-fit: contain; }
+        .logo-fallback {
+            display: none; height: 64px; padding: 0 12px; align-items: center; justify-content: center;
+            text-align: center; border-radius: 8px; background: #f1f5f9; border: 1px solid #cbd5e1;
+            font-size: 11px; line-height: 1.2; font-weight: 700; color: #475569;
+        }
+        .title { text-align: center; margin-bottom: 32px; }
+        .title h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1e293b; }
+        .title p { margin: 8px 0 0; font-size: 14px; color: #64748b; }
+        .menu { display: flex; flex-direction: column; gap: 16px; }
+        .btn {
+            display: block; width: 100%; padding: 12px 16px; text-align: center; text-decoration: none;
+            color: #fff; font-size: 16px; font-weight: 600; border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,.08);
+            transition: transform .2s, background-color .2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn:hover { transform: translateY(-4px); }
+        .btn:active { transform: translateY(0); }
+        .btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+        .pbb      { background: #2563eb; } .pbb:hover      { background: #1d4ed8; }
+        .bphtb    { background: #059669; } .bphtb:hover    { background: #047857; }
+        .reklame  { background: #f59e0b; } .reklame:hover  { background: #d97706; }
+        .restoran { background: #e11d48; } .restoran:hover { background: #be123c; }
+        .hiburan  { background: #9333ea; } .hiburan:hover  { background: #7e22ce; }
+        .parkir   { background: #475569; } .parkir:hover   { background: #334155; }
+        .hotel    { background: #0284c7; } .hotel:hover    { background: #0369a1; }
+        .airtanah { background: #0d9488; } .airtanah:hover { background: #0f766e; }
+        .pbbkb    { background: #ea580c; } .pbbkb:hover    { background: #c2410c; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+
+        <!-- Logo (file harus satu folder dengan index.html) -->
+        <div class="logos">
+            <img src="logo-dki.png" alt="Logo Pemprov DKI Jakarta"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="logo-fallback">PEMPROV<br>DKI JAKARTA</div>
+
+            <img src="logo-bapenda.png" alt="Logo Bapenda DKI Jakarta"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="logo-fallback">BAPENDA<br>DKI JAKARTA</div>
+        </div>
+
+        <!-- Judul -->
+        <div class="title">
+            <h1>Kalkulator Pajak</h1>
+            <p>Pilih jenis pajak yang ingin dihitung</p>
+        </div>
+
+        <!-- Menu -->
+        <nav class="menu">
+            <a class="btn pbb"      href="kalkulator-pbb-dki.html">PBB</a>
+            <a class="btn bphtb"    href="kalkulator-bphtb-dki.html">BPHTB</a>
+            <a class="btn reklame"  href="kalkulator-pajak-reklame.html">Reklame</a>
+            <a class="btn restoran" href="kalkulator-pajak-restoran.html">Restoran</a>
+            <a class="btn hiburan"  href="kalkulator-pajak-hiburan.html">Hiburan-Kesenian</a>
+            <a class="btn parkir"   href="kalkulator-pajak-parkir.html">Parkir</a>
+            <a class="btn hotel"    href="kalkulator-pajak-hotel.html">Hotel</a>
+            <a class="btn airtanah" href="kalkulator-pajak-air-tanah.html">Air Tanah</a>
+            <a class="btn pbbkb"    href="kalkulator-pajak-pbbkb.html">PBBKB</a>
+        </nav>
+
+    </div>
+
+</body>
+</html>

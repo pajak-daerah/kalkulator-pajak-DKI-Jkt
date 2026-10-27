@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Pajak Hotel (PBJT Jasa Perhotelan) DKI Jakarta</title>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  :root { --dk:#0369a1; --ac:#0ea5e9; --lt:#e0f2fe; --bd:#bae6fd; }
+  body { background: #eef2f7; margin: 0; padding: 20px; color: #1a2b4a; }
+  .container { max-width: 1080px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden; }
+  header { position: relative; background: linear-gradient(135deg, var(--dk), var(--ac)); color: #fff; padding: 22px 26px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .unit { margin-top: 6px; font-size: 14px; font-weight: 600; letter-spacing: .5px; }
+  header p { margin: 6px 0 0; font-size: 13px; opacity: .92; }
+  .back { position:absolute; right:22px; top:22px; color:#fff; font-size:12px; text-decoration:none; background:rgba(255,255,255,.2); padding:6px 12px; border-radius:20px; }
+  .back:hover { background:rgba(255,255,255,.32); }
+  .content { padding: 24px 26px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  input, select { width: 100%; padding: 10px; border: 1px solid #c3cfe0; border-radius: 8px; font-size: 14px; background: #fbfdff; }
+  input:focus, select:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--lt); }
+  .full { grid-column: 1 / -1; }
+  .hint { font-size: 11px; color: #607d8b; margin-top: 4px; }
+  .section-title { font-size: 14px; font-weight: 700; color: var(--dk); margin: 18px 0 8px; border-bottom: 2px solid var(--bd); padding-bottom: 4px; }
+  .calc-box { background: var(--lt); border: 1px dashed var(--ac); border-radius: 8px; padding: 10px 14px; font-size: 12px; margin-top: 8px; color: var(--dk); }
+  .buttons { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+  button { padding: 11px 22px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; }
+  .btn-hitung { background: var(--ac); color: #fff; } .btn-hitung:hover { background: var(--dk); }
+  .btn-simpan { background: #2e7d32; color: #fff; } .btn-simpan:hover { background: #1b5e20; }
+  .btn-cetak { background: #ef6c00; color: #fff; } .btn-cetak:hover { background: #e65100; }
+  .btn-reset { background: #eceff1; color: #455a64; } .btn-reset:hover { background: #cfd8dc; }
+  .btn-pdf { padding: 5px 10px; font-size: 12px; background: var(--lt); color: var(--dk); } .btn-pdf:hover { background: var(--bd); }
+  .stale { display:none; background:#fff3e0; border-left:4px solid #ef6c00; padding:10px 14px; border-radius:6px; font-size:12px; margin-top:16px; }
+  .stale.show { display:block; }
+  .result { margin-top: 24px; border: 1px solid #c3cfe0; border-radius: 10px; overflow: hidden; display: none; }
+  .result.show { display: block; animation: pop .45s ease; }
+  @keyframes pop { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+  .result-head { background: var(--lt); padding: 12px 18px; font-weight: 700; color: var(--dk); }
+  .hero { background: linear-gradient(135deg, var(--dk), var(--ac)); color:#fff; padding:22px; text-align:center; }
+  .hero small { opacity:.9; letter-spacing:.8px; font-size:11px; }
+  .hero .big { font-size:34px; font-weight:700; margin:6px 0 4px; }
+  .hero .sub { font-size:13px; opacity:.95; margin-bottom:10px; }
+  .result-body { padding: 18px; }
+  .chips { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .chip { flex:1; min-width:150px; background:var(--lt); border:1px solid var(--bd); border-radius:10px; padding:10px 14px; }
+  .chip small { display:block; color:#607d8b; font-size:11px; } .chip b { font-size:16px; color:var(--dk); }
+  .chip.green { background:#e8f5e9; border-color:#c8e6c9; } .chip.green b { color:#2e7d32; }
+  .bars { margin:4px 0 14px; }
+  .bar-row { display:grid; grid-template-columns:190px 1fr 150px; gap:10px; align-items:center; font-size:12px; margin:9px 0; }
+  .bar-row b { text-align:right; }
+  .bar-track { background:var(--lt); border-radius:20px; height:14px; overflow:hidden; }
+  .bar-fill { height:100%; width:0; border-radius:20px; transition: width .9s cubic-bezier(.2,.8,.2,1); }
+  .row { display: flex; justify-content: space-between; gap: 14px; padding: 8px 0; border-bottom: 1px dashed #dde5ee; font-size: 14px; }
+  .row span:last-child { text-align: right; }
+  .row:last-child { border-bottom: none; }
+  details.steps { margin-top:12px; background:var(--lt); border-radius:8px; padding:10px 14px; font-size:13px; }
+  details.steps summary { cursor:pointer; font-weight:600; color:var(--dk); }
+  details.steps ol { margin:10px 0 0 18px; padding:0; line-height:1.9; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-objek { background: #c8e6c9; color: #1b5e20; } .badge-bebas { background: #ffcdd2; color: #b71c1c; }
+  .saved-list { margin-top: 26px; } .saved-list h3 { font-size: 15px; margin-bottom: 10px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid #e0e7ef; text-align: left; white-space: nowrap; }
+  th { background: #f5f8fc; font-weight: 700; color: #37474f; }
+  .empty { color: #90a4ae; font-style: italic; font-size: 13px; }
+  .note { background: #fff8e1; border-left: 4px solid #ffb300; padding: 12px 16px; font-size: 12px; border-radius: 6px; margin-top: 20px; line-height: 1.6; }
+  .input-err { border-color:#e53935 !important; box-shadow:0 0 0 3px rgba(229,57,53,.15) !important; }
+  .toast { position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(30px); background:#263238; color:#fff; padding:12px 20px; border-radius:30px; font-size:13px; opacity:0; pointer-events:none; transition:.3s; z-index:99; max-width:90%; text-align:center; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); } .toast.err { background:#c62828; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .bar-row { grid-template-columns:1fr; } .bar-row b { text-align:left; }
+    .back { position:static; display:inline-block; margin-top:10px; } .hero .big { font-size:26px; } }
+  @media print {
+    body { background:#fff; padding:0; }
+    header, .buttons, .saved-list, .note, .input-section, .stale, .toast, .back, .btn-pdf { display:none !important; }
+    .container { box-shadow:none; } .result { display:block !important; border:2px solid #000; }
+    .result-head, .hero { background:#eee !important; color:#000 !important; -webkit-print-color-adjust:exact; }
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <a class="back" href="index.html">← Menu Utama</a>
+    <h1>Kalkulator Pajak Hotel — PBJT Jasa Perhotelan DKI Jakarta</h1>
+    <div class="unit">--- UP3D Wilayah Kecamatan Penjaringan ---</div>
+    <p>Perda DKI No. 1 Tahun 2024 · UU No. 1 Tahun 2022 (HKPD) · Tarif 10%</p>
+  </header>
+  <div class="content">
+    <div class="input-section">
+      <div class="section-title">1. Skenario Contoh (opsional)</div>
+      <div class="grid"><div class="full">
+        <label for="skenario">Pilih Skenario (isi otomatis)</label>
+        <select id="skenario" onchange="isiSkenario()"><option value="">-- Pilih Skenario Contoh --</option>
+          <option value="1">1. Hotel, 10 kamar × 2 malam, service charge 10%</option>
+          <option value="2">2. Hostel, 20 kamar × 1 malam</option>
+          <option value="3">3. Vila dengan diskon 10%</option>
+          <option value="4">4. Hotel + fasilitas pertemuan (50 kamar)</option>
+          <option value="5">5. Guest house, menginap mingguan</option>
+          <option value="6">6. Asrama Pemerintah/Pemda (Dikecualikan)</option>
+          <option value="7">7. Tempat tinggal di rumah sakit (Dikecualikan)</option>
+        </select></div></div>
+
+      <div class="section-title">2. Data Akomodasi</div>
+      <div class="grid">
+        <div><label for="jenisAkomodasi">Jenis Akomodasi</label><select id="jenisAkomodasi" onchange="hitungLive()"><option value="Hotel">Hotel</option><option value="Hostel">Hostel</option><option value="Vila">Vila</option><option value="Motel">Motel</option><option value="Guest House / Penginapan">Guest House / Penginapan</option><option value="Pesanggrahan / Losmen">Pesanggrahan / Losmen</option></select></div>
+        <div><label for="kelompok">Kelompok Pengguna / Penyedia</label><select id="kelompok" onchange="hitungLive()"><option value="Komersial">Komersial</option><option value="Asrama Pemerintah/Pemda (Dikecualikan)">Asrama Pemerintah/Pemda (Dikecualikan)</option><option value="Rumah Sakit / Panti (Dikecualikan)">Rumah Sakit / Panti (Dikecualikan)</option><option value="Lembaga Pendidikan / Keagamaan (Dikecualikan)">Lembaga Pendidikan / Keagamaan (Dikecualikan)</option></select><div class="hint">Kelompok bertanda "Dikecualikan" tidak dikenakan PBJT.</div></div>
+        <div class="full"><label for="namaUsaha">Nama Hotel / Usaha (opsional)</label><input type="text" id="namaUsaha" placeholder="Contoh: Hotel Contoh Penjaringan" value="" oninput="hitungLive()"></div>
+        <div><label for="jumlahKamar">Jumlah Kamar Terjual</label><input type="number" id="jumlahKamar" min="0" value="1" oninput="hitungLive()"></div>
+        <div><label for="jumlahMalam">Lama Menginap (malam)</label><input type="number" id="jumlahMalam" min="0" value="1" oninput="hitungLive()"></div>
+        <div><label for="tarifKamar">Tarif Kamar (Rp/kamar/malam)</label><input type="number" id="tarifKamar" min="0" value="0" oninput="hitungLive()"><div class="hint">Sebelum PBJT; pembayaran yang diterima penyedia jasa.</div></div>
+        <div><label for="pendapatanLain">Pendapatan Fasilitas Lain (Rp)</label><input type="number" id="pendapatanLain" min="0" value="0" oninput="hitungLive()"><div class="hint">Contoh: laundry, ruang pertemuan, fasilitas lain.</div></div>
+      </div>
+      <div class="calc-box" id="calcBox"></div>
+
+      <div class="section-title">3. Service Charge, Diskon &amp; Tarif</div>
+      <div class="grid">
+        <div><label for="serviceCharge">Service Charge (%)</label><input type="number" id="serviceCharge" min="0" max="100" step="0.1" value="0" oninput="hitungLive()"><div class="hint">Dihitung dari pendapatan setelah diskon; termasuk dasar pengenaan.</div></div>
+        <div><label for="diskonPersen">Diskon (%)</label><input type="number" id="diskonPersen" min="0" max="100" step="0.1" value="0" oninput="hitungLive()"></div>
+        <div><label for="tarifPajak">Tarif PBJT Jasa Perhotelan (%)</label><input type="number" id="tarifPajak" min="0" max="10" step="0.1" value="10" oninput="hitungLive()"><div class="hint">Perda DKI No. 1/2024: 10%.</div></div>
+        <div class="full"><label for="keterangan">Keterangan / No. SPTPD (opsional)</label><input type="text" id="keterangan" placeholder="Contoh: SPTPD #HTL-2026-001" value="" oninput="hitungLive()"></div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn-hitung" onclick="hitung()">🧮 Hitung</button>
+        <button class="btn-simpan" onclick="simpan()">💾 Simpan (PDF)</button>
+        <button class="btn-cetak" onclick="cetak()">🖨️ Cetak</button>
+        <button class="btn-reset" onclick="resetForm()">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="stale" id="stale">⚠️ Data input berubah. Klik <strong>Hitung</strong> untuk memperbarui hasil sebelum menyimpan.</div>
+    <div class="result" id="result">
+      <div class="result-head">Hasil Perhitungan Pajak Hotel (PBJT Jasa Perhotelan)</div>
+      <div class="hero">
+        <small>PBJT JASA PERHOTELAN TERUTANG</small>
+        <div class="big" id="rTotal">Rp 0</div>
+        <div class="sub" id="rSub"></div>
+        <span id="rStatus"></span>
+      </div>
+      <div class="result-body">
+        <div class="chips" id="chips"></div>
+        <div class="bars" id="bars"></div>
+        <div id="rows"></div>
+        <details class="steps"><summary>Lihat langkah perhitungan</summary><ol id="rSteps"></ol></details>
+      </div>
+    </div>
+
+    <div class="saved-list">
+      <h3>📋 Riwayat Perhitungan Tersimpan</h3>
+      <div class="table-wrap"><table><thead id="theadRiwayat"></thead><tbody id="tbodyRiwayat"></tbody></table></div>
+      <div class="buttons" style="margin-top:12px;"><button class="btn-reset" onclick="hapusRiwayat()">🗑️ Hapus Riwayat</button></div>
+    </div>
+
+    <div class="note"><strong>Catatan:</strong> PBJT Jasa Perhotelan = Tarif 10% × Dasar Pengenaan (jumlah pembayaran yang diterima penyedia jasa, termasuk service charge). Penyediaan tempat tinggal tertentu (asrama pemerintah, rumah sakit/panti, lembaga pendidikan dan keagamaan) dikecualikan. Dasar hukum: <strong>Perda DKI No. 1 Tahun 2024</strong> dan <strong>UU No. 1 Tahun 2022 (HKPD)</strong>.</div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const dk = '#0369a1', ac = '#0ea5e9', ok = '#ef6c00';
+const EXC = 'Komersial';
+const CFG = {
+  prefix: 'HTL', storage: 'pbjt_hotel_dki_riwayat', file: 'PajakHotel',
+  pdfTitle: 'PERHITUNGAN PAJAK HOTEL', pdfSub1: 'PBJT atas Jasa Perhotelan', pdfSub2: 'Pemerintah Provinsi DKI Jakarta | Perda No. 1 Tahun 2024',
+  footer: 'Kalkulator Pajak Hotel - DKI Jakarta', secA: 'Data Akomodasi',
+  colors: { dk, ac, lt: '#e0f2fe', bd: '#bae6fd' },
+  totalLabel: 'PBJT JASA PERHOTELAN TERUTANG', okBadge: 'OBJEK PBJT', noBadge: 'Dikecualikan',
+  catatan: 'Catatan: Dokumen ini merupakan simulasi perhitungan berdasarkan data yang diinput pengguna dan bukan surat ketetapan pajak. ' +
+    'PBJT Jasa Perhotelan dihitung dari jumlah pembayaran yang diterima penyedia jasa (dasar pengenaan) dengan tarif 10% sesuai Perda DKI No. 1/2024. ' +
+    'Penyediaan tempat tinggal tertentu (asrama pemerintah, rumah sakit/panti, lembaga pendidikan dan keagamaan) dikecualikan.',
+  histHead: ['Akomodasi', 'Kamar × Malam', 'DPP', 'Tarif', 'PBJT'],
+  defaults: { jenisAkomodasi: 'Hotel', kelompok: 'Komersial', namaUsaha: '', jumlahKamar: 1, jumlahMalam: 1, tarifKamar: 0, pendapatanLain: 0,
+              serviceCharge: 0, diskonPersen: 0, tarifPajak: 10, keterangan: '' },
+  skenario: {
+    1: { jenisAkomodasi: 'Hotel', kelompok: 'Komersial', jumlahKamar: 10, jumlahMalam: 2, tarifKamar: 1200000, pendapatanLain: 500000, serviceCharge: 10, diskonPersen: 0, tarifPajak: 10, keterangan: 'Hotel, 10 kamar x 2 malam, service charge 10%' },
+    2: { jenisAkomodasi: 'Hostel', kelompok: 'Komersial', jumlahKamar: 20, jumlahMalam: 1, tarifKamar: 250000, pendapatanLain: 0, serviceCharge: 0, diskonPersen: 0, tarifPajak: 10, keterangan: 'Hostel, tanpa service charge' },
+    3: { jenisAkomodasi: 'Vila', kelompok: 'Komersial', jumlahKamar: 1, jumlahMalam: 3, tarifKamar: 3500000, pendapatanLain: 0, serviceCharge: 0, diskonPersen: 10, tarifPajak: 10, keterangan: 'Vila dengan diskon 10%' },
+    4: { jenisAkomodasi: 'Hotel', kelompok: 'Komersial', jumlahKamar: 50, jumlahMalam: 1, tarifKamar: 900000, pendapatanLain: 15000000, serviceCharge: 10, diskonPersen: 0, tarifPajak: 10, keterangan: 'Hotel + fasilitas pertemuan' },
+    5: { jenisAkomodasi: 'Guest House / Penginapan', kelompok: 'Komersial', jumlahKamar: 5, jumlahMalam: 7, tarifKamar: 400000, pendapatanLain: 0, serviceCharge: 0, diskonPersen: 0, tarifPajak: 10, keterangan: 'Guest house, menginap mingguan' },
+    6: { jenisAkomodasi: 'Hotel', kelompok: 'Asrama Pemerintah/Pemda (Dikecualikan)', jumlahKamar: 10, jumlahMalam: 30, tarifKamar: 100000, pendapatanLain: 0, serviceCharge: 0, diskonPersen: 0, tarifPajak: 10, keterangan: 'Asrama milik Pemerintah/Pemda' },
+    7: { jenisAkomodasi: 'Guest House / Penginapan', kelompok: 'Rumah Sakit / Panti (Dikecualikan)', jumlahKamar: 4, jumlahMalam: 10, tarifKamar: 150000, pendapatanLain: 0, serviceCharge: 0, diskonPersen: 0, tarifPajak: 10, keterangan: 'Tempat tinggal di rumah sakit' }
+  },
+  ambil: () => ({ jenis: $('jenisAkomodasi').value, kelompok: $('kelompok').value, usaha: $('namaUsaha').value.trim(),
+    kamar: num('jumlahKamar'), malam: num('jumlahMalam'), tarifKamar: num('tarifKamar'), lain: num('pendapatanLain'),
+    svc: num('serviceCharge'), diskonP: num('diskonPersen'), tarif: num('tarifPajak'), keterangan: $('keterangan').value.trim() }),
+  bebas: i => i.kelompok !== EXC,
+  cek: i => [[i.kamar > 0, 'jumlahKamar', 'Jumlah kamar harus lebih dari 0.'], [i.malam > 0, 'jumlahMalam', 'Jumlah malam harus lebih dari 0.'],
+    [i.tarifKamar > 0, 'tarifKamar', 'Tarif kamar harus lebih dari 0.'], [i.lain >= 0, 'pendapatanLain', 'Pendapatan lain tidak boleh negatif.'],
+    [i.svc >= 0 && i.svc <= 100, 'serviceCharge', 'Service charge harus antara 0 dan 100%.'],
+    [i.diskonP >= 0 && i.diskonP <= 100, 'diskonPersen', 'Diskon harus antara 0 dan 100%.'],
+    [i.tarif > 0 && i.tarif <= 10, 'tarifPajak', 'Tarif PBJT harus antara 0 dan 10%.']],
+  hitungData(i) {
+    const room = i.kamar * i.malam * i.tarifKamar, bruto = room + i.lain, diskon = bruto * i.diskonP / 100,
+          netto = bruto - diskon, svcN = netto * i.svc / 100, dpp = netto + svcN;
+    if (i.kelompok !== EXC) return { ...i, dikecualikan: true, room, bruto, diskon, netto, svcN, dpp: 0, total: 0, tagihan: 0, alasan: 'Kelompok dikecualikan: ' + i.kelompok };
+    const pajak = dpp * i.tarif / 100;
+    return { ...i, dikecualikan: false, room, bruto, diskon, netto, svcN, dpp, total: pajak, tagihan: dpp + pajak, alasan: '-' };
+  },
+  preview: h => h.dikecualikan ? 'Kelompok pengguna ini <strong>dikecualikan</strong> dari PBJT Jasa Perhotelan.'
+    : 'Pendapatan kamar = ' + angka(h.kamar) + ' × ' + angka(h.malam) + ' × ' + rupiah(h.tarifKamar) + ' = <strong>' + rupiah(h.room) +
+      '</strong> &nbsp;|&nbsp; DPP = <strong>' + rupiah(h.dpp) + '</strong> &nbsp;|&nbsp; PBJT = ' + h.tarif + '% × ' + rupiah(h.dpp) + ' = <strong>' + rupiah(h.total) + '</strong>',
+  sub: h => h.dikecualikan ? h.alasan : 'DPP ' + rupiah(h.dpp) + ' × tarif ' + h.tarif + '%',
+  rows: h => [['Jenis Akomodasi', h.jenis], ['Nama Usaha', h.usaha || '-'], ['Kelompok Pengguna', h.kelompok],
+    ['Kamar × Malam', angka(h.kamar) + ' kamar × ' + angka(h.malam) + ' malam'], ['Tarif Kamar', rupiah(h.tarifKamar) + ' /kamar/malam'],
+    ['Pendapatan Kamar', rupiah(h.room)], ['Pendapatan Fasilitas Lain', rupiah(h.lain)], ['Diskon (' + angka(h.diskonP) + '%)', '- ' + rupiah(h.diskon)],
+    ['Service Charge (' + angka(h.svc) + '%)', rupiah(h.svcN)], ['Dasar Pengenaan Pajak (DPP)', rupiah(h.dpp)], ['Tarif PBJT', h.tarif + '%'],
+    ['Total Dibayar Konsumen (DPP + PBJT)', rupiah(h.tagihan)]],
+  steps: h => ['Pendapatan kamar = Kamar × Malam × Tarif = ' + angka(h.kamar) + ' × ' + angka(h.malam) + ' × ' + rupiah(h.tarifKamar) + ' = <strong>' + rupiah(h.room) + '</strong>',
+    'Pendapatan bruto = kamar + fasilitas lain = <strong>' + rupiah(h.bruto) + '</strong>; setelah diskon = <strong>' + rupiah(h.netto) + '</strong>',
+    'Service charge ' + angka(h.svc) + '% × ' + rupiah(h.netto) + ' = <strong>' + rupiah(h.svcN) + '</strong>',
+    'DPP = jumlah pembayaran yang diterima = <strong>' + rupiah(h.dpp) + '</strong>',
+    'PBJT = ' + h.tarif + '% × DPP = <strong>' + rupiah(h.total) + '</strong>'],
+  chips: h => [['Dasar pengenaan (DPP)', rupiah(h.dpp)], ['Tarif PBJT', h.tarif + '%'], ['Total dibayar konsumen', rupiah(h.tagihan), 'green']],
+  bars: h => [['Pendapatan bruto', h.bruto, dk], ['DPP', h.dpp, ac], ['PBJT terutang', h.total, ok]],
+  pdfA: h => [['Jenis Akomodasi', h.jenis], ['Nama Usaha', h.usaha || '-'], ['Kelompok Pengguna', h.kelompok],
+    ['Kamar × Malam', angka(h.kamar) + ' kamar × ' + angka(h.malam) + ' malam'], ['Tarif Kamar', rupiah(h.tarifKamar) + ' /kamar/malam'],
+    ['Pendapatan Fasilitas Lain', rupiah(h.lain)]],
+  pdfB: h => [['Pendapatan Kamar', angka(h.kamar) + ' × ' + angka(h.malam) + ' × ' + rupiah(h.tarifKamar), rupiah(h.room)],
+    ['Pendapatan Bruto', 'Kamar + fasilitas lain', rupiah(h.bruto)], ['Diskon', angka(h.diskonP) + '% × bruto', '- ' + rupiah(h.diskon)],
+    ['Service Charge', angka(h.svc) + '% × ' + rupiah(h.netto), rupiah(h.svcN)], ['Dasar Pengenaan (DPP)', 'Setelah diskon + service charge', rupiah(h.dpp)],
+    ['PBJT Terutang', h.tarif + '% × DPP', rupiah(h.total)], ['Total Dibayar Konsumen', 'DPP + PBJT', rupiah(h.tagihan)]],
+  histRow: r => [r.jenis, angka(r.kamar) + ' × ' + angka(r.malam), rupiah(r.dpp), r.tarif + '%', rupiah(r.total)]
+};
+
+/* ===================== ENGINE BERSAMA ===================== */
+const $ = id => document.getElementById(id);
+const rupiah = n => 'Rp ' + Number(n).toLocaleString('id-ID', {maximumFractionDigits: 2});
+const angka = n => Number(n).toLocaleString('id-ID', {maximumFractionDigits: 2});
+const num = id => parseFloat($(id).value) || 0;
+const hexRGB = h => [1, 3, 5].map(k => parseInt(h.substr(k, 2), 16));
+let hasilTerakhir = null, riwayat = [];
+try { riwayat = JSON.parse(localStorage.getItem(CFG.storage) || '[]'); } catch (e) { riwayat = []; }
+const simpanLS = () => { try { localStorage.setItem(CFG.storage, JSON.stringify(riwayat)); } catch (e) {} };
+
+let toastTimer;
+function toast(msg, err) {
+  const t = $('toast'); t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = 'toast', 3200);
+}
+function countUp(el, to) {
+  const t0 = performance.now(), d = 900;
+  (function f(t) {
+    const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = rupiah(to * e);
+    if (p < 1) requestAnimationFrame(f);
+  })(t0);
+}
+
+function isiSkenario() {
+  const kode = $('skenario').value; if (!kode) return;
+  const s = CFG.skenario[kode];
+  Object.keys(s).forEach(k => { if ($(k)) $(k).value = s[k]; });
+  hitungLive();
+}
+
+function hitungLive() {
+  const h = CFG.hitungData(CFG.ambil());
+  $('calcBox').innerHTML = CFG.preview(h);
+  if (hasilTerakhir) $('stale').classList.add('show');
+}
+
+function validasi(i) {
+  document.querySelectorAll('.input-err').forEach(e => e.classList.remove('input-err'));
+  if (CFG.bebas(i)) return true;
+  for (const [ok, id, msg] of CFG.cek(i)) {
+    if (!ok) { const el = $(id); el.classList.add('input-err'); el.focus(); toast(msg, true); return false; }
+  }
+  return true;
+}
+
+function tampilkanHasil(h) {
+  $('rStatus').innerHTML = h.dikecualikan
+    ? '<span class="badge badge-bebas">' + CFG.noBadge + '</span>' : '<span class="badge badge-objek">' + CFG.okBadge + '</span>';
+  $('rSub').textContent = CFG.sub(h);
+  const rows = CFG.rows(h).concat([['Keterangan', (h.keterangan || '-') + (h.dikecualikan ? ' | ' + h.alasan : '')],
+                                   ['Waktu Hitung', new Date(h.waktu).toLocaleString('id-ID')]]);
+  $('rows').innerHTML = rows.map(r => '<div class="row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>').join('');
+  $('rSteps').innerHTML = h.dikecualikan ? '<li>' + h.alasan + ', sehingga pajak terutang = <strong>Rp 0</strong>.</li>'
+    : CFG.steps(h).map(s => '<li>' + s + '</li>').join('');
+  $('chips').innerHTML = h.dikecualikan ? '' : CFG.chips(h).map(c =>
+    '<div class="chip ' + (c[2] || '') + '"><small>' + c[0] + '</small><b>' + c[1] + '</b></div>').join('');
+  const bars = $('bars'), items = h.dikecualikan ? [] : CFG.bars(h), mx = Math.max(0, ...items.map(b => b[1]));
+  if (mx <= 0) bars.innerHTML = '';
+  else {
+    bars.innerHTML = items.map(r => '<div class="bar-row"><span>' + r[0] + '</span><div class="bar-track"><div class="bar-fill" data-w="' +
+      (r[1] / mx * 100).toFixed(1) + '" style="background:' + r[2] + '"></div></div><b>' + rupiah(r[1]) + '</b></div>').join('');
+    setTimeout(() => bars.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w + '%'), 60);
+  }
+  const res = $('result'); res.classList.remove('show'); void res.offsetWidth; res.classList.add('show');
+  countUp($('rTotal'), h.total);
+}
+
+function hitung() {
+  const i = CFG.ambil();
+  if (!validasi(i)) return;
+  const w = new Date(), p = n => String(n).padStart(2, '0');
+  const h = CFG.hitungData(i);
+  h.waktu = w.toISOString();
+  h.nomor = CFG.prefix + '-' + w.getFullYear() + p(w.getMonth() + 1) + p(w.getDate()) + '-' + p(w.getHours()) + p(w.getMinutes()) + p(w.getSeconds());
+  hasilTerakhir = h;
+  tampilkanHasil(h); hitungLive();
+  $('stale').classList.remove('show');
+  $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toast('Perhitungan selesai. Pajak terutang: ' + rupiah(h.total));
+}
+
+function simpan() {
+  if (!hasilTerakhir) { toast('Klik Hitung terlebih dahulu.', true); return; }
+  if ($('stale').classList.contains('show')) { toast('Data berubah. Klik Hitung lagi sebelum menyimpan.', true); return; }
+  riwayat.push(hasilTerakhir); simpanLS(); renderRiwayat(); buatPDF(hasilTerakhir);
+}
+function cetak() {
+  if (!hasilTerakhir) { toast('Klik Hitung terlebih dahulu sebelum mencetak.', true); return; }
+  window.print();
+}
+function resetForm() {
+  $('skenario').value = '';
+  Object.keys(CFG.defaults).forEach(k => $(k).value = CFG.defaults[k]);
+  $('result').classList.remove('show'); $('stale').classList.remove('show');
+  document.querySelectorAll('.input-err').forEach(e => e.classList.remove('input-err'));
+  hasilTerakhir = null; hitungLive();
+}
+
+/* ===================== PDF ===================== */
+function buatPDF(h) {
+  if (!(window.jspdf && window.jspdf.jsPDF)) {
+    toast('Pustaka PDF belum termuat (perlu internet). Membuka dialog cetak...', true);
+    setTimeout(() => window.print(), 700); return;
+  }
+  const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, M = 15, DK = hexRGB(CFG.colors.dk), AC = hexRGB(CFG.colors.ac), LT = hexRGB(CFG.colors.lt), BD = hexRGB(CFG.colors.bd);
+  const nomor = h.nomor || (CFG.prefix + '-' + new Date(h.waktu).getTime());
+  const tgl = new Date(h.waktu).toLocaleString('id-ID');
+
+  doc.setFillColor(...DK); doc.rect(0, 0, W, 40, 'F');
+  doc.setFillColor(...AC); doc.rect(0, 40, W, 3, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text(CFG.pdfTitle, M, 17);
+  doc.setFontSize(10.5); doc.text('--- UP3D Wilayah Kecamatan Penjaringan ---', M, 24);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+  doc.text(CFG.pdfSub1, M, 30); doc.text(CFG.pdfSub2, M, 35);
+  doc.setFontSize(8.5); doc.text('No. Dokumen', W - M, 14, { align: 'right' });
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(nomor, W - M, 20, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.text('Tanggal Hitung', W - M, 28, { align: 'right' });
+  doc.setFont('helvetica', 'bold'); doc.text(tgl, W - M, 34, { align: 'right' });
+
+  doc.setFillColor(...LT); doc.setDrawColor(...DK); doc.setLineWidth(0.6);
+  doc.roundedRect(M, 50, W - 2 * M, 28, 3, 3, 'FD');
+  doc.setTextColor(...DK); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  doc.text(CFG.totalLabel, M + 6, 59);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(23); doc.text(rupiah(h.total), M + 6, 72);
+  doc.setFillColor(...(h.dikecualikan ? [198, 40, 40] : [46, 125, 50]));
+  doc.roundedRect(W - M - 38, 56, 32, 9, 4, 4, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(9);
+  doc.text(h.dikecualikan ? CFG.noBadge.toUpperCase() : CFG.okBadge, W - M - 22, 62, { align: 'center' });
+
+  const sec = (y, t) => {
+    doc.setTextColor(...DK); doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text(t, M, y);
+    doc.setDrawColor(...BD); doc.setLineWidth(0.5); doc.line(M, y + 1.5, W - M, y + 1.5);
+  };
+  const tbl = (startY, head, body, cols) => doc.autoTable({
+    startY, head: head ? [head] : undefined, body, theme: 'grid', margin: { left: M, right: M },
+    styles: { fontSize: 9, cellPadding: 2.2, textColor: [38, 50, 56], lineColor: [221, 229, 238] },
+    headStyles: { fillColor: DK, textColor: 255 }, alternateRowStyles: { fillColor: [248, 250, 252] }, columnStyles: cols
+  });
+
+  sec(90, 'A. ' + CFG.secA);
+  tbl(94, null, CFG.pdfA(h).concat([['Keterangan', h.keterangan || '-']]), { 0: { cellWidth: 62, fontStyle: 'bold', fillColor: LT } });
+  let y = doc.lastAutoTable.finalY + 9;
+  sec(y, 'B. Rincian Perhitungan');
+  tbl(y + 4, ['Komponen', 'Perhitungan', 'Nilai'], h.dikecualikan ? [['Pajak terutang', h.alasan, rupiah(0)]] : CFG.pdfB(h),
+      { 2: { halign: 'right', fontStyle: 'bold' } });
+  y = doc.lastAutoTable.finalY + 9;
+  const items = h.dikecualikan ? [] : CFG.bars(h), mx = Math.max(0, ...items.map(b => b[1]));
+  if (mx > 0) {
+    if (y > 235) { doc.addPage(); y = 20; }
+    sec(y, 'C. Komposisi Perhitungan');
+    items.forEach((r, k) => {
+      const by = y + 9 + k * 9;
+      doc.setTextColor(55, 71, 79); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(r[0], M, by + 3.5);
+      doc.setFillColor(...LT); doc.roundedRect(M + 36, by, 80, 5, 2.5, 2.5, 'F');
+      doc.setFillColor(...hexRGB(r[2])); doc.roundedRect(M + 36, by, Math.max(2, 80 * r[1] / mx), 5, 2.5, 2.5, 'F');
+      doc.setFont('helvetica', 'bold'); doc.text(rupiah(r[1]), W - M, by + 3.5, { align: 'right' });
+    });
+    y += 12 + items.length * 9;
+  }
+  if (y > 255) { doc.addPage(); y = 20; }
+  const cat = doc.splitTextToSize(CFG.catatan, W - 2 * M - 8);
+  doc.setFillColor(255, 248, 225); doc.setDrawColor(255, 179, 0);
+  doc.roundedRect(M, y, W - 2 * M, cat.length * 4.2 + 6, 2, 2, 'FD');
+  doc.setTextColor(95, 75, 20); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.text(cat, M + 4, y + 6);
+
+  const n = doc.getNumberOfPages();
+  for (let p = 1; p <= n; p++) {
+    doc.setPage(p); doc.setDrawColor(200); doc.setLineWidth(0.2); doc.line(M, 285, W - M, 285);
+    doc.setTextColor(120); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    doc.text(CFG.footer, M, 290); doc.text('Halaman ' + p + ' / ' + n, W - M, 290, { align: 'right' });
+  }
+  doc.save(CFG.file + '_' + nomor + '.pdf');
+  toast('Tersimpan ke riwayat & PDF diunduh: ' + CFG.file + '_' + nomor + '.pdf');
+}
+function unduhRiwayat(i) { buatPDF(riwayat[i]); }
+
+/* ===================== RIWAYAT ===================== */
+function renderRiwayat() {
+  const cols = CFG.histHead.length + 3;
+  $('theadRiwayat').innerHTML = '<tr><th>No</th>' + CFG.histHead.map(t => '<th>' + t + '</th>').join('') + '<th>Waktu</th><th>PDF</th></tr>';
+  const tbody = $('tbodyRiwayat');
+  if (riwayat.length === 0) { tbody.innerHTML = '<tr><td colspan="' + cols + '" class="empty">Belum ada data tersimpan.</td></tr>'; return; }
+  tbody.innerHTML = riwayat.map((r, i) => '<tr><td>' + (i + 1) + '</td>' + CFG.histRow(r).map(c => '<td>' + c + '</td>').join('') +
+    '<td>' + new Date(r.waktu).toLocaleString('id-ID') + '</td><td><button class="btn-pdf" onclick="unduhRiwayat(' + i + ')">⬇ PDF</button></td></tr>').join('');
+}
+function hapusRiwayat() {
+  if (!confirm('Hapus semua riwayat perhitungan?')) return;
+  riwayat = []; try { localStorage.removeItem(CFG.storage); } catch (e) {} renderRiwayat();
+}
+renderRiwayat(); hitungLive();
+
+</script>
+</body>
+</html>
